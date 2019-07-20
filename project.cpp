@@ -482,8 +482,36 @@ string Buyer::GetAccountType()
 {
     return accountType;
 }
-//Produc Class Start's
+//Categories Class Start Here
+class Categories
+{
+protected:
+    string Category[11] = {"Mobile", "Vehicles", "Land", "Electronics", "Computer", "Fashion", "Cosmetics", "Books", "Funiture", "Gaming Console", "Hobbies"};
 
+public:
+    void DisplayCategory();
+};
+//Scope Resoluted Methods
+void Categories::DisplayCategory()
+{
+    for (int i = 0; i < 11; i++)
+    {
+        cout << "-> " << i + 1 << " For " << Category[i] << endl;
+    }
+};
+//Categories Class End Here
+//Filter Class Start Here
+class Filter : public Categories
+{
+private:
+public:
+    void Search(string);
+    void Price(int, int);
+    void Date();
+    void byCategory(string);
+};
+//Filter Class Start Here
+//Produc Class Start's
 class Product
 {
 private:
@@ -567,16 +595,83 @@ int Product::GetProudctPrice()
 {
     return ProductPrice;
 };
+//Crete Ad Class
 
+class Ads : public Product
+{
+private:
+    Global Obj;
+    string AdDate, AdPostedBy, AdLocation, AdAddress;
+    bool AdFeatured;
+
+public:
+    Ads()
+    {
+        AdDate = "";
+        AdPostedBy = "";
+        AdLocation = "";
+        AdAddress = "";
+        AdFeatured = false;
+    }
+    //Class Setter Functions;
+    void SetAdDate();
+    void SetAdPostedBy(string);
+    void SetAdLocation(string);
+    void SetAdAdress(string);
+    void SetAddFeature(bool);
+    //Class Getter Functions;
+    string GetAdDate();
+    string GetAdPostedBy();
+    string GetAdLocation();
+    string GetAdAdress();
+    bool GetIsAuction();
+    //Class Functionality
+};
+//Scoper Resolution Classes Setter Functions
+void Ads::SetAdDate()
+{
+    AdDate = Obj.GetDate();
+};
+void Ads::SetAdPostedBy(string val)
+{
+    AdPostedBy = val;
+};
+void Ads::SetAdAdress(string val)
+{
+    AdAddress = val;
+};
+void Ads::SetAdLocation(string val)
+{
+    AdLocation = val;
+};
+void Ads::SetAddFeature(bool val)
+{
+    AdFeatured = val;
+};
+
+//Scoper Resolution Classes Getter Functions
+
+string Ads::GetAdDate()
+{
+    return AdDate;
+};
+string Ads::GetAdPostedBy()
+{
+    return AdPostedBy;
+};
+string Ads::GetAdLocation()
+{
+    return AdLocation;
+};
+string Ads::GetAdAdress()
+{
+    return AdAddress;
+};
+bool Ads::GetIsAuction()
+{
+    return AdFeatured;
+}
+//Ads Class End
 int main()
 {
-    Seller obj;
-    obj.SetSubscription("Seller");
-    cout << obj.GetSubscription() << endl;
-    Buyer obj1;
-    obj1.SetAccountType("Buyer");
-    cout << obj1.GetAccountType() << endl;
-    Product obj2;
-    obj2.ProductIDGenerator();
-    cout<<obj2.GetProductID()<<endl;
 }
