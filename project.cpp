@@ -19,7 +19,7 @@ using namespace std;
 class User
 {
 private:
-    string firstName, lastName, userName, passWord, eMail, gender, city, state, country, phoneNumber, joinDate, accountType;
+    string firstName, lastName, userName, passWord, eMail, gender, city, state, country, phoneNumber, joinDate;
     string id;
 
 public:
@@ -37,7 +37,6 @@ public:
         country = "";
         id = "";
         joinDate = "";
-        accountType = "";
     }
     //Encapsulation!
     //Setter Of Class
@@ -53,7 +52,8 @@ public:
     void SetCountry(string);
     void SetId(string);
     void SetJoinDate(string);
-    void SetAccountType(string);
+    virtual void SetSubscription(string) = 0;
+    virtual void SetAccountType(string) = 0;
     //Getter Of Class
     string GetFirstName();
     string GetLastName();
@@ -67,7 +67,8 @@ public:
     string GetCountry();
     string GetId();
     string GetJoinDate();
-    string GetAccountType();
+    virtual string GetAccountType() = 0;
+    virtual string GetSubscription() = 0;
 };
 
 //03205946869
@@ -120,14 +121,6 @@ void User::SetJoinDate(string val)
 {
     joinDate = val;
 };
-void User::SetAccountType(string val)
-{
-    accountType = val;
-};
-string User::GetAccountType()
-{
-    return accountType;
-}
 //Scoper Resolution Classes Getter Functions
 string User::GetFirstName()
 {
@@ -185,7 +178,7 @@ class Seller : public User
 private:
     int totalAds, allowedAds, activeAds, soldGoods;
     float revenue;
-    string subScription;
+    string subScription, accountType;
 
 public:
     Seller()
@@ -196,6 +189,7 @@ public:
         soldGoods = 0;
         revenue = 0.0;
         subScription = "";
+        accountType = "";
     }
     //Class Setter Function
     void SetTotalAds(int);
@@ -204,12 +198,14 @@ public:
     void SetSoldGood(int);
     void SetRevenue(float);
     void SetSubscription(string);
+    void SetAccountType(string);
     //class Getter Functions
     int GetTotalAds();
     int GetAllowedAds();
     int GetActiveAd();
     int GetSoldGood();
     float GetRevenue();
+    string GetAccountType();
     string GetSubscription();
 };
 
@@ -238,7 +234,15 @@ void Seller::SetSubscription(string val)
 {
     subScription = val;
 };
+void Seller::SetAccountType(string type)
+{
+    accountType = type;
+}
 //Scope Resolution Getter Function
+string Seller::GetAccountType()
+{
+    return accountType;
+}
 int Seller::GetTotalAds()
 {
     return totalAds;
@@ -264,6 +268,83 @@ string Seller::GetSubscription()
     return subScription;
 };
 //Seller Class End's
+
+//Buyer Class Start's
+class Buyer : public User
+{
+private:
+    int toltalBid, Bidding, Won, Loss;
+    string subScription, accountType;
+
+public:
+    //Buyer Class Setter
+    void SetTotalBid(int);
+    void SetBidding(int);
+    void SetWonBid(int);
+    void SetLossBid(int);
+    void SetSubscription(string);
+    void SetAccountType(string);
+    //Buyer Class Getter
+    int GetTotalBid();
+    int GetBidding();
+    int GetSetWon();
+    int GetLoss();
+    string GetSubscription();
+    string GetAccountType();
+};
+//Scope Resoluted Class Methods Getter
+void Buyer::SetTotalBid(int value)
+{
+    toltalBid = value;
+}
+void Buyer::SetBidding(int value)
+{
+    Bidding = value;
+}
+void Buyer::SetWonBid(int value)
+{
+    Won = value;
+}
+void Buyer::SetLossBid(int value)
+{
+    Loss = value;
+}
+void Buyer::SetAccountType(string value)
+{
+    accountType = value;
+}
+void Buyer::SetSubscription(string value)
+{
+    subScription = value;
+}
+//Scope Resoluted Class Methods Setter
+int Buyer::GetTotalBid()
+{
+    return toltalBid;
+}
+int Buyer::GetBidding()
+{
+    return Bidding;
+}
+int Buyer::GetSetWon()
+{
+    return Won;
+}
+int Buyer::GetLoss()
+{
+    return Loss;
+}
+string Buyer::GetSubscription()
+{
+    return subScription;
+}
+string Buyer::GetAccountType()
+{
+    return accountType;
+}
 int main()
 {
+    Seller obj;
+    obj.SetSubscription("Hello");
+    cout << obj.GetSubscription() << endl;
 }
