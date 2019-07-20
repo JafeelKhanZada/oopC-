@@ -15,6 +15,146 @@
 #include "rapidjson/ostreamwrapper.h"
 using namespace rapidjson;
 using namespace std;
+class Global
+{
+private:
+    string Serials;
+    int index;
+
+protected:
+    int Date[3];
+    int Time[3];
+    const char *userAttributes[12] = {"fname", "lname", "username", "phoneNumber", "gender", "email", "city", "state", "country", "joinDate", "password"};
+    const char *SellerAccountAttribute[7] = {"type", "subscriptopn", "TotalAds", "AllowedAd", "ActiveAd", "SoldGood", "Revenue"};
+    const char *sellerAttributes[9] = {"productId", "productTitle", "productDescription", "productCategory", "adDate", "adLocation", "adAdress", "productPrice", "adFeature"};
+    string Personal[12][2] = {{"Id ", ""}, {"First Name", ""}, {"Last Name", ""}, {"Username ", ""}, {"Phone Number", ""}, {"Gender", ""}, {"Email", ""}, {"City", ""}, {"State", ""}, {"Country", ""}, {"Joining Date", ""}, {"Password", ""}};
+    string Account[7][2] = {{"Type ", ""}, {"Subscription ", ""}, {"TotalAds", ""}, {"Allowed Ads", ""}, {"Active Ads ", ""}, {"Good Solded", ""}, {"Revenue", ""}};
+    string DisplayAd[11] = {"Ad Unique ID : ",
+                            "Ad Title : ",
+                            "Ad Description : ",
+                            "Category : ",
+                            "Upload Date : ",
+                            "Ad Loction : ",
+                            "Ad Address : ",
+                            "Ad Price : Rs",
+                            "For Auction : ",
+                            "Uploaded By : ",
+                            "Phone Number : "};
+
+public:
+    Global()
+    {
+        Serials = "";
+        index = -1;
+    };
+    string SerialGenerator(int);
+    void GenrateDate();
+    void GenerateTime();
+    void FindIndex(string);
+    //Class Getter Functions
+    string GetDate();
+    string GetTime();
+    int GetIndex();
+};
+//Scoper Resolution Classes Setter Functions
+string Global::SerialGenerator(int len)
+{
+    srand(time(0));
+    string str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    string newstr;
+    int pos;
+    while (newstr.size() != len)
+    {
+        pos = ((rand() % (str.size() - 1)));
+        newstr += str.substr(pos, 1);
+    }
+    Serials = newstr;
+    return Serials;
+};
+void Global::GenrateDate()
+{
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    Date[0] = 1 + ltm->tm_mon;
+    Date[1] = ltm->tm_mday;
+    Date[2] = 1900 + ltm->tm_year;
+};
+void Global::GenerateTime()
+{
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    Time[0] = ltm->tm_hour;
+    Time[1] = ltm->tm_min;
+    Time[2] = ltm->tm_sec;
+};
+void Global::FindIndex(string id)
+{
+    ifstream ifs("Userdetail.json");
+    IStreamWrapper isw(ifs);
+    Document d;
+    d.ParseStream(isw);
+    for (int i = 0; i < d.GetArray().Size(); i++)
+    {
+        string ids = d.GetArray()[i].GetObject()["userId"].GetString();
+        if (ids == id)
+        {
+            index = i;
+        }
+    }
+}
+int Global::GetIndex()
+{
+    return index;
+}
+string Global::GetDate()
+{
+    GenrateDate();
+    string date;
+    for (int i = 0; i < 3; i++)
+    {
+        if (i < 2)
+        {
+            if (i == 0)
+            {
+                if (Date[i] < 10)
+                {
+                    date += "0" + to_string(Date[i]) + "-";
+                }
+                else
+                {
+                    date += to_string(Date[i]) + "-";
+                }
+            }
+            else
+            {
+                date += to_string(Date[i]) + "-";
+            }
+        }
+        else
+        {
+            date += to_string(Date[i]);
+        }
+    }
+    return date;
+}
+string Global::GetTime()
+{
+    GenerateTime();
+    string time;
+    for (int i = 0; i < 3; i++)
+    {
+        if (i != 3)
+        {
+            time += to_string(Time[i]) + " : ";
+        }
+        else
+        {
+            time += to_string(Time[i]);
+        }
+    }
+    return time;
+}
+//For User Working Classes Are Starting Here
 //User Class Starting
 class User
 {
@@ -342,9 +482,101 @@ string Buyer::GetAccountType()
 {
     return accountType;
 }
+//Produc Class Start's
+
+class Product
+{
+private:
+    Global obj;
+    string ProductID, ProductDesc, ProductCategories, ProductTitle;
+    bool ForAuction;
+    int ProductPrice;
+
+public:
+    Product()
+    {
+        ProductID = "";
+        ProductDesc = "";
+        ProductCategories = "";
+        ProductTitle = "";
+        ForAuction = false;
+        ProductPrice = 0;
+    }
+    //Class Setter Function
+    void ProductIDGenerator();
+    void ProdutDescSetter(string);
+    void ProductCategorySetter(string);
+    void ProductTitleSetter(string);
+    void ForAuctionSetter(bool);
+    void ProductPriceSetter(int);
+    //Class Getter Function
+    string GetProductID();
+    string GetProducDesc();
+    string GetProductCategory();
+    string GetProductTitle();
+    bool GetForAuction();
+    int GetProudctPrice();
+};
+//Scoper Resolution Classes Setter Functions
+void Product::ProductIDGenerator()
+{
+    ProductID = obj.SerialGenerator(10);
+};
+void Product::ProdutDescSetter(string desc)
+{
+    ProductDesc = desc;
+};
+void Product::ProductCategorySetter(string category)
+{
+    ProductCategories = category;
+};
+void Product::ProductTitleSetter(string Title)
+{
+    ProductTitle = Title;
+};
+void Product::ProductPriceSetter(int price)
+{
+    ProductPrice = price;
+};
+void Product::ForAuctionSetter(bool val)
+{
+    ForAuction = val;
+};
+//Scoper Resolution Classes Getter Functions
+string Product::GetProductID()
+{
+    return ProductID;
+};
+string Product::GetProducDesc()
+{
+    return ProductDesc;
+};
+string Product::GetProductCategory()
+{
+    return ProductCategories;
+};
+string Product::GetProductTitle()
+{
+    return ProductTitle;
+};
+bool Product::GetForAuction()
+{
+    return ForAuction;
+};
+int Product::GetProudctPrice()
+{
+    return ProductPrice;
+};
+
 int main()
 {
     Seller obj;
-    obj.SetSubscription("Hello");
+    obj.SetSubscription("Seller");
     cout << obj.GetSubscription() << endl;
+    Buyer obj1;
+    obj1.SetAccountType("Buyer");
+    cout << obj1.GetAccountType() << endl;
+    Product obj2;
+    obj2.ProductIDGenerator();
+    cout<<obj2.GetProductID()<<endl;
 }
