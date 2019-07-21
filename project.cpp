@@ -15,6 +15,7 @@
 #include "rapidjson/ostreamwrapper.h"
 using namespace rapidjson;
 using namespace std;
+//Class Credentials Start Here
 class Credentials
 {
 private:
@@ -63,6 +64,44 @@ int Credentials::GetIndex()
 bool Credentials::GetAuth()
 {
     return auth;
+}
+//Class Credentials End Here
+class Authentications : public Credentials
+{
+private:
+    int indexes;
+
+public:
+    void Login(string, string);
+    int Index();
+};
+//Scope Resoluted Class Method Defination
+void Authentications::Login(string email, string pass)
+{
+    ifstream ifs("Userdetail.json");
+    IStreamWrapper isw(ifs);
+    Document d;
+    d.ParseStream(isw);
+    for (SizeType i = 0; i < d.GetArray().Size(); i++)
+    {
+        string mail = d.GetArray()[i].GetObject()["Personal"].GetObject()["email"].GetString();
+        string password = d.GetArray()[i].GetObject()["Personal"].GetObject()["password"].GetString();
+        if (mail == email && password == pass)
+        {
+            cout << "Login Successfully!" << endl;
+            indexes = i;
+            break;
+        }
+        if (i == d.GetArray().Size() - 1)
+        {
+            cout << "Invalid Credentials!" << endl;
+            break;
+        }
+    }
+}
+int Authentications::Index()
+{
+    return indexes;
 }
 class Global
 {
@@ -264,7 +303,6 @@ public:
 //Scoper Resolution Classes Setter Functions
 void User::SetFirstName(string name)
 {
-    cout << name;
     firstName = name;
 };
 void User::SetLastName(string name)
@@ -560,21 +598,28 @@ public:
     void SellerSignUp();
     void BuyerSignUp();
     void SavingData(int);
+    //Class Destructor
+    ~Registration()
+    {
+        cout << "Registered!";
+    }
 };
 //Scope Resoluted Defination Of Protype
 void Registration::SavingData(int val)
 {
+    val -= 1;
     //Opening Json File
-    ifstream openFile("Usedetail.json");
-    IStreamWrapper json(openFile);
+    ifstream file("Userdetail.json");
+    IStreamWrapper json(file);
     Document d;
     //Deserialize Json
     d.ParseStream(json);
-    const Value &Array = d.GetArray();
+    // Creating New Object
+    Value MainObj(kObjectType);
+    Value Account(kObjectType);
+    cout << acc[val] << endl;
     if (acc[val] == "Seller")
     {
-        //Creating New Object
-        Value MainObj(kObjectType);
         MainObj.AddMember("userId", StringRef(Seller::GetId().c_str()), d.GetAllocator());
         Value Personal(kObjectType);
         Personal.AddMember("fname", StringRef(Seller::GetFirstName().c_str()), d.GetAllocator());
@@ -589,13 +634,51 @@ void Registration::SavingData(int val)
         Personal.AddMember("country", StringRef(Seller::GetCountry().c_str()), d.GetAllocator());
         Personal.AddMember("joinDate", StringRef(Seller::GetJoinDate().c_str()), d.GetAllocator());
         MainObj.AddMember("Personal", Personal, d.GetAllocator());
-        d.PushBack(MainObj, d.GetAllocator());
-        // 3. Stringify the DOM
-        ofstream ofs("Userdetail.json");
-        OStreamWrapper osw(ofs);
-        Writer<OStreamWrapper> writers(osw);
-        d.Accept(writers);
+        Account.AddMember("type", StringRef(Seller::GetAccountType().c_str()), d.GetAllocator());
+        Value ads(kArrayType);
+        Account.AddMember("Ads", ads, d.GetAllocator());
+        Account.AddMember("subscriptopn", StringRef(Seller::GetSubscription().c_str()), d.GetAllocator());
+        Account.AddMember("TotalAds", GetTotalAds(), d.GetAllocator());
+        Account.AddMember("AllowedAd", GetAllowedAds(), d.GetAllocator());
+        Account.AddMember("ActiveAd", GetActiveAd(), d.GetAllocator());
+        Account.AddMember("SoldGood", GetSoldGood(), d.GetAllocator());
+        Account.AddMember("Revenue", GetRevenue(), d.GetAllocator());
     }
+    else if (acc[val] == "Buyer")
+    {
+        MainObj.AddMember("userId", StringRef(Buyer::GetId().c_str()), d.GetAllocator());
+        Value Personal(kObjectType);
+        Personal.AddMember("fname", StringRef(Buyer::GetFirstName().c_str()), d.GetAllocator());
+        Personal.AddMember("lname", StringRef(Buyer::GetLastName().c_str()), d.GetAllocator());
+        Personal.AddMember("username", StringRef(Buyer::GetUserName().c_str()), d.GetAllocator());
+        Personal.AddMember("phoneNumber", StringRef(Buyer::GetPhoneNumber().c_str()), d.GetAllocator());
+        Personal.AddMember("gender", StringRef(Buyer::GetGender().c_str()), d.GetAllocator());
+        Personal.AddMember("password", StringRef(Buyer::GetPassword().c_str()), d.GetAllocator());
+        Personal.AddMember("email", StringRef(Buyer::GetEmail().c_str()), d.GetAllocator());
+        Personal.AddMember("city", StringRef(Buyer::GetCity().c_str()), d.GetAllocator());
+        Personal.AddMember("state", StringRef(Buyer::GetState().c_str()), d.GetAllocator());
+        Personal.AddMember("country", StringRef(Buyer::GetCountry().c_str()), d.GetAllocator());
+        Personal.AddMember("joinDate", StringRef(Buyer::GetJoinDate().c_str()), d.GetAllocator());
+        MainObj.AddMember("Personal", Personal, d.GetAllocator());
+        Account.AddMember("type", StringRef(Buyer::GetAccountType().c_str()), d.GetAllocator());
+        Account.AddMember("totalBid", GetTotalBid(), d.GetAllocator());
+        Account.AddMember("Bidded", GetBidding(), d.GetAllocator());
+        Account.AddMember("WonBids", GetSetWon(), d.GetAllocator());
+        Account.AddMember("LossBids", GetLoss(), d.GetAllocator());
+        Value Carts(kArrayType);
+        Account.AddMember("Cart", Carts, d.GetAllocator());
+        Value Favourite(kArrayType);
+        Account.AddMember("Favourite", Favourite, d.GetAllocator());
+        Value Purchase(kArrayType);
+        Account.AddMember("Purchase", Purchase, d.GetAllocator());
+    }
+    MainObj.AddMember("Account", Account, d.GetAllocator());
+    d.PushBack(MainObj, d.GetAllocator());
+    // 3. Stringify the DOM
+    ofstream ofs("Userdetail.json");
+    OStreamWrapper osw(ofs);
+    Writer<OStreamWrapper> writers(osw);
+    d.Accept(writers);
 }
 int Registration::GenericSignUp()
 {
@@ -1005,16 +1088,16 @@ void SellerDashboard::createAd()
 class BuyerDashboard : public Dashboard, public Buyer
 {
 private:
-    vector<vector<string>> mycart;
-    vector<vector<string>> favourite;
+    // vector<vector<string>> mycart;
+    // vector<vector<string>> favourite;
 
 protected:
     string Arr[11] = {"AdId", "AdTitle", "AdDescription", "Category", "UploadDate", "AdLocation", "AdAdress", "AdPrice", "ForAuction", "UploadBy", "PhoneNumber"};
 
 public:
     void explorerAds();
-    void adToFavourite(string, vector<vector<string>> &data);
-    void addToCart(string, vector<vector<string>> &obj);
+    // void adToFavourite(string, vector<vector<string>> &data);
+    // void addToCart(string, vector<vector<string>> &obj);
     void myCart(string);
     void myFavourite(string);
     void delCart(string);
@@ -1027,4 +1110,44 @@ public:
 };
 int main()
 {
+    string email, pass;
+    int temp;
+Main:
+    Registration Reg;
+    Authentications Log;
+    system("clear");
+    cout << "Press 1 For Login " << endl;
+    cout << "Press 2 For SignUp " << endl;
+    int x;
+    cout << "Enter Here : ";
+    cin >> x;
+    switch (x)
+    {
+    case 1:
+        cout << "Enter Your Email Here : ";
+        cin >> email;
+        cout << "Enter Your Password Here : ";
+        cin >> pass;
+        Log.Login(email, pass);
+        cout << Log.Index() << endl;
+        break;
+    case 2:
+        temp = Reg.GenericSignUp();
+        switch (temp)
+        {
+        case 1:
+            Reg.SellerSignUp();
+            Reg.SavingData(temp);
+            break;
+        case 2:
+            Reg.BuyerSignUp();
+            Reg.SavingData(temp);
+        default:
+            break;
+        }
+        goto Main;
+        break;
+    default:
+        break;
+    }
 }
