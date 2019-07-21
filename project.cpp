@@ -15,6 +15,55 @@
 #include "rapidjson/ostreamwrapper.h"
 using namespace rapidjson;
 using namespace std;
+class Credentials
+{
+private:
+    string userId;
+    int ind;
+    bool auth;
+
+public:
+    Credentials()
+    {
+        userId = "";
+        ind = -1;
+        auth = false;
+    }
+    //Protype Of Setter Methods
+    void SetUserId(string);
+    void SetIndex(int);
+    void SetAuth(bool);
+    //Protype Of Getter Method
+    string GetUserId();
+    int GetIndex();
+    bool GetAuth();
+};
+//Scope Resoluted Setter Methods
+void Credentials::SetUserId(string id)
+{
+    userId = id;
+}
+void Credentials::SetIndex(int index)
+{
+    ind = index;
+}
+void Credentials::SetAuth(bool val)
+{
+    auth = val;
+}
+//Scope Resoluted Getter Methods
+string Credentials::GetUserId()
+{
+    return userId;
+}
+int Credentials::GetIndex()
+{
+    return ind;
+}
+bool Credentials::GetAuth()
+{
+    return auth;
+}
 class Global
 {
 private:
@@ -215,6 +264,7 @@ public:
 //Scoper Resolution Classes Setter Functions
 void User::SetFirstName(string name)
 {
+    cout << name;
     firstName = name;
 };
 void User::SetLastName(string name)
@@ -482,6 +532,200 @@ string Buyer::GetAccountType()
 {
     return accountType;
 }
+class Registration : public Seller, public Buyer
+{
+private:
+    Global Obj;
+    string acc[3] = {"Seller", "Buyer", "Both"};
+    string sub[3] = {"Free", "Standard", "VVIP"};
+    string fname, lname, pass, email, city, state, gender, country, joindate, username, phone;
+
+public:
+    Registration()
+    {
+        fname = "";
+        lname = "";
+        pass = "";
+        email = "";
+        city = "";
+        state = "";
+        gender = "";
+        country = "";
+        joindate = "";
+        username = "";
+        phone = "";
+    };
+    //Protype Class Methods
+    int GenericSignUp();
+    void SellerSignUp();
+    void BuyerSignUp();
+    void SavingData(int);
+};
+//Scope Resoluted Defination Of Protype
+void Registration::SavingData(int val)
+{
+    //Opening Json File
+    ifstream openFile("Usedetail.json");
+    IStreamWrapper json(openFile);
+    Document d;
+    //Deserialize Json
+    d.ParseStream(json);
+    const Value &Array = d.GetArray();
+    if (acc[val] == "Seller")
+    {
+        //Creating New Object
+        Value MainObj(kObjectType);
+        MainObj.AddMember("userId", StringRef(Seller::GetId().c_str()), d.GetAllocator());
+        Value Personal(kObjectType);
+        Personal.AddMember("fname", StringRef(Seller::GetFirstName().c_str()), d.GetAllocator());
+        Personal.AddMember("lname", StringRef(Seller::GetLastName().c_str()), d.GetAllocator());
+        Personal.AddMember("username", StringRef(Seller::GetUserName().c_str()), d.GetAllocator());
+        Personal.AddMember("phoneNumber", StringRef(Seller::GetPhoneNumber().c_str()), d.GetAllocator());
+        Personal.AddMember("gender", StringRef(Seller::GetGender().c_str()), d.GetAllocator());
+        Personal.AddMember("password", StringRef(Seller::GetPassword().c_str()), d.GetAllocator());
+        Personal.AddMember("email", StringRef(Seller::GetEmail().c_str()), d.GetAllocator());
+        Personal.AddMember("city", StringRef(Seller::GetCity().c_str()), d.GetAllocator());
+        Personal.AddMember("state", StringRef(Seller::GetState().c_str()), d.GetAllocator());
+        Personal.AddMember("country", StringRef(Seller::GetCountry().c_str()), d.GetAllocator());
+        Personal.AddMember("joinDate", StringRef(Seller::GetJoinDate().c_str()), d.GetAllocator());
+        MainObj.AddMember("Personal", Personal, d.GetAllocator());
+        d.PushBack(MainObj, d.GetAllocator());
+        // 3. Stringify the DOM
+        ofstream ofs("Userdetail.json");
+        OStreamWrapper osw(ofs);
+        Writer<OStreamWrapper> writers(osw);
+        d.Accept(writers);
+    }
+}
+int Registration::GenericSignUp()
+{
+    int x;
+    cout << "Enter Your First Name Here : ";
+    cin >> fname;
+    cout << "Enter Your Last Name Here : ";
+    cin >> lname;
+    cout << "Enter Your Username Here : ";
+    cin >> username;
+    cout << "Enter Your Email Here : ";
+    cin >> email;
+    cout << "Enter Your Password Here : ";
+    cin >> pass;
+    cout << "Enter Your Phone Number Here : ";
+    cin >> phone;
+    cout << "Enter Your Gender Here : ";
+    cin >> gender;
+    cout << "Enter Your City Here : ";
+    cin.ignore();
+    getline(cin, city);
+    cout << "Enter Your State Here : ";
+    cin >> state;
+    cout << "Enter Your Country Here : ";
+    cin >> country;
+    cout << "Select Your Account Type " << endl;
+    for (int i = 0; i < 3; i++)
+    {
+        cout << "-> " << i + 1 << " For " << acc[i] << endl;
+    }
+    cin >> x;
+    return x;
+};
+void Registration::SellerSignUp()
+{
+    Seller::SetId(Obj.SerialGenerator(12));
+    Seller::SetFirstName(fname);
+    Seller::SetLastName(lname);
+    Seller::SetUserName(username);
+    Seller::SetEmail(email);
+    Seller::SetPassword(pass);
+    Seller::SetGender(gender);
+    Seller::SetCity(city);
+    Seller::SetState(state);
+    Seller::SetCountry(country);
+    Seller::SetPhoneNumber(phone);
+    Seller::SetJoinDate(joindate);
+    Seller::SetAccountType(acc[0]);
+    int y;
+    cout << "Select Your Subscription Plan " << endl;
+    for (int i = 0; i < 3; i++)
+    {
+        cout << "-> " << i + 1 << " For " << sub[i] << endl;
+    }
+    cin >> y;
+    switch (y)
+    {
+    case 1:
+        Seller::SetSubscription("Free");
+        Seller::SetTotalAds(10);
+        Seller::SetAllowedAds(10);
+        Seller::SetActiveAd(0);
+        Seller::SetSoldGood(0);
+        Seller::SetRevenue(0);
+        break;
+    case 2:
+        Seller::SetSubscription("Standard");
+        Seller::SetTotalAds(20);
+        Seller::SetAllowedAds(20);
+        Seller::SetActiveAd(0);
+        Seller::SetSoldGood(0);
+        Seller::SetRevenue(0);
+        break;
+    case 3:
+        Seller::SetSubscription("VVIP");
+        Seller::SetTotalAds(50);
+        Seller::SetAllowedAds(50);
+        Seller::SetActiveAd(0);
+        Seller::SetSoldGood(0);
+        Seller::SetRevenue(0);
+        break;
+    }
+}
+void Registration::BuyerSignUp()
+{
+    Buyer::SetId(Obj.SerialGenerator(12));
+    Buyer::SetFirstName(fname);
+    Buyer::SetLastName(lname);
+    Buyer::SetUserName(username);
+    Buyer::SetEmail(email);
+    Buyer::SetPassword(pass);
+    Buyer::SetGender(gender);
+    Buyer::SetCity(city);
+    Buyer::SetState(state);
+    Buyer::SetCountry(country);
+    Buyer::SetPhoneNumber(phone);
+    Buyer::SetJoinDate(joindate);
+    Buyer::SetAccountType(acc[1]);
+    int y;
+    cout << "Select Your Subscription Plan " << endl;
+    for (int i = 0; i < 3; i++)
+    {
+        cout << "-> " << i + 1 << " For " << sub[i] << endl;
+    }
+    cin >> y;
+    switch (y)
+    {
+    case 1:
+        Buyer::SetSubscription("Free");
+        Buyer::SetTotalBid(10);
+        Buyer::SetBidding(0);
+        Buyer::SetWonBid(0);
+        Buyer::SetLossBid(0);
+        break;
+    case 2:
+        Buyer::SetSubscription("Standard");
+        Buyer::SetTotalBid(20);
+        Buyer::SetBidding(0);
+        Buyer::SetWonBid(0);
+        Buyer::SetLossBid(0);
+        break;
+    case 3:
+        Buyer::SetSubscription("VVIP");
+        Buyer::SetTotalBid(30);
+        Buyer::SetBidding(0);
+        Buyer::SetWonBid(0);
+        Buyer::SetLossBid(0);
+        break;
+    }
+};
 //Categories Class Start Here
 class Categories
 {
@@ -501,7 +745,7 @@ void Categories::DisplayCategory()
 };
 //Categories Class End Here
 //Filter Class Start Here
-class Filter : public Categories
+class Filter
 {
 private:
 public:
@@ -512,9 +756,10 @@ public:
 };
 //Filter Class Start Here
 //Produc Class Start's
-class Product
+class Product : public Categories
 {
 private:
+    //Composition
     Global obj;
     string ProductID, ProductDesc, ProductCategories, ProductTitle;
     bool ForAuction;
@@ -600,6 +845,7 @@ int Product::GetProudctPrice()
 class Ads : public Product
 {
 private:
+    //Composition
     Global Obj;
     string AdDate, AdPostedBy, AdLocation, AdAddress;
     bool AdFeatured;
@@ -672,6 +918,113 @@ bool Ads::GetIsAuction()
     return AdFeatured;
 }
 //Ads Class End
+
+//Dashboard Class Start's Here:
+class Dashboard
+{
+private:
+    bool auth;
+
+public:
+    Dashboard()
+    {
+        auth = false;
+    }
+    //Protype Of Dashboard Methods
+    void LogOut();
+    void Information();
+    void PersonalInformation();
+    void EditInformation();
+};
+//Dashboard Class End Here
+
+class SellerDashboard : public Dashboard, public Seller, public Ads
+{
+private:
+    string pname, pdesc, pcategory, add;
+    int pprice;
+    string date;
+    int swi;
+
+public:
+    SellerDashboard()
+    {
+        pname = "";
+        pdesc = "";
+        pcategory = "";
+        add = "";
+        pprice = 0;
+        date = "";
+        swi = 0;
+    }
+    //Prototype Of Class Methods
+    void createAd();
+    void myAd();
+    void editAd();
+    void delAd();
+    void selectCategory(int);
+};
+//Scope Resoluted Class Method Defination
+void SellerDashboard::selectCategory(int x)
+{
+    ProductCategorySetter(Category[x - 1]);
+}
+void SellerDashboard::createAd()
+{
+    if (GetAllowedAds() > 0)
+    {
+        cout << "Enter Product Title Here : ";
+        cin.ignore();
+        getline(cin, pname);
+        cout << "Enter Product Description Here : ";
+        getline(cin, pdesc);
+        DisplayCategory();
+        cout << "Select Product Category Here : ";
+        cin >> swi;
+        selectCategory(swi);
+        getline(cin, pcategory);
+        cout << "Enter Product Price Here : ";
+        cin >> pprice;
+        ProductIDGenerator();
+        ProdutDescSetter(pdesc);
+        ProductTitleSetter(pname);
+        ProductPriceSetter(pprice);
+        SetAdDate();
+        SetAdPostedBy(GetUserName());
+        SetAdLocation(GetCity());
+        add = GetCity() + " " + GetState() + "," + GetCountry();
+        SetAdAdress(add);
+        SetAddFeature(false);
+    }
+    else
+    {
+        cout << "Your Ad Posting Limit Exceeds!" << endl;
+    }
+};
+//BuyerDashboard Class Start Here
+class BuyerDashboard : public Dashboard, public Buyer
+{
+private:
+    vector<vector<string>> mycart;
+    vector<vector<string>> favourite;
+
+protected:
+    string Arr[11] = {"AdId", "AdTitle", "AdDescription", "Category", "UploadDate", "AdLocation", "AdAdress", "AdPrice", "ForAuction", "UploadBy", "PhoneNumber"};
+
+public:
+    void explorerAds();
+    void adToFavourite(string, vector<vector<string>> &data);
+    void addToCart(string, vector<vector<string>> &obj);
+    void myCart(string);
+    void myFavourite(string);
+    void delCart(string);
+    void checkOut(string);
+    void favouriteToCart(string);
+    void delFavourite(string);
+    void clearCart(string);
+    void clearFavourite(string);
+    void clearAds(int);
+};
 int main()
 {
 }
