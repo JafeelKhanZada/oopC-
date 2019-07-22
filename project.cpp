@@ -15,7 +15,113 @@
 #include "rapidjson/ostreamwrapper.h"
 using namespace rapidjson;
 using namespace std;
-void ClearAd(int id, vector <vector <string> > &obj, vector <string> &ref);
+void ClearAd(int id, vector<vector<string> > &obj, vector<string> &ref);
+//Excel Data Handle Class Start Here
+class Excel
+{
+private:
+    int index;
+
+public:
+    //Class Constructor
+    Excel()
+    {
+        index = -1;
+    }
+    //Class Method Prototype
+    void SetIndex(int);
+    int GetIndex();
+    int ForBuyerReport();
+    int ForSellerReport();
+};
+void Excel::SetIndex(int i)
+{
+    index = i;
+}
+int Excel::GetIndex()
+{
+    return index;
+}
+int Excel::ForBuyerReport()
+{
+    int row = 1;
+    int col = 0;
+    int id = index;
+    ifstream ifs("Userdetail.json");
+    IStreamWrapper isw(ifs);
+    Document d;
+    d.ParseStream(isw);
+    string filename = d.GetArray()[id].GetObject()["Personal"].GetObject()["username"].GetString();
+    filename = filename + ".xlsx";
+    lxw_workbook *workbook = workbook_new(filename.c_str());
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+    lxw_format *format = workbook_add_format(workbook);
+    format_set_bold(format);
+    worksheet_write_string(worksheet, 0, 0, "Ad Title", format);
+    worksheet_write_string(worksheet, 0, 1, "Category", format);
+    worksheet_write_string(worksheet, 0, 2, "Date", format);
+    worksheet_write_string(worksheet, 0, 3, "Location", format);
+    worksheet_write_string(worksheet, 0, 4, "Name", format);
+    worksheet_write_string(worksheet, 0, 5, "Price", format);
+    int x = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray().Size();
+    for (int i = 0; i < x; i++)
+    {
+        string title = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Adtitle"].GetString();
+        string category = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Category"].GetString();
+        string date = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Date"].GetString();
+        string Loc = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Location"].GetString();
+        string name = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Name"].GetString();
+        int price = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Price"].GetInt();
+        worksheet_write_string(worksheet, row, 0, title.c_str(), NULL);
+        worksheet_write_string(worksheet, row, 1, category.c_str(), NULL);
+        worksheet_write_string(worksheet, row, 2, date.c_str(), NULL);
+        worksheet_write_string(worksheet, row, 3, Loc.c_str(), NULL);
+        worksheet_write_string(worksheet, row, 4, name.c_str(), NULL);
+        worksheet_write_number(worksheet, row, 5, price, NULL);
+        row++;
+    }
+    string sum = "=SUM(F2:F" + to_string(row) + ")";
+    worksheet_write_string(worksheet, row, 4, "Total", format);
+    worksheet_write_formula(worksheet, row, 5, sum.c_str(), format);
+    cout << "Report Has Been Generated!" << endl;
+    return workbook_close(workbook);
+}
+int Excel::ForSellerReport()
+{
+    int row = 1;
+    int col = 0;
+    int id = index;
+    ifstream ifs("Userdetail.json");
+    IStreamWrapper isw(ifs);
+    Document d;
+    d.ParseStream(isw);
+    string filename = d.GetArray()[id].GetObject()["Personal"].GetObject()["username"].GetString();
+    filename = filename + ".xlsx";
+    lxw_workbook *workbook = workbook_new(filename.c_str());
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+    lxw_format *format = workbook_add_format(workbook);
+    format_set_bold(format);
+    worksheet_write_string(worksheet, 0, 0, "Ad Title", format);
+    worksheet_write_string(worksheet, 0, 1, "Date", format);
+    worksheet_write_string(worksheet, 0, 2, "Price", format);
+    int x = d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray().Size();
+    for (int i = 0; i < x; i++)
+    {
+        string title = d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Adtitle"].GetString();
+        string date = d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Date"].GetString();
+        int price = d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Price"].GetInt();
+        worksheet_write_string(worksheet, row, 0, title.c_str(), NULL);
+        worksheet_write_string(worksheet, row, 1, date.c_str(), NULL);
+        worksheet_write_number(worksheet, row, 2, price, NULL);
+        row++;
+    }
+    string sum = "=SUM(C2:C" + to_string(row) + ")";
+    worksheet_write_string(worksheet, row, 1, "Total", format);
+    worksheet_write_formula(worksheet, row, 2, sum.c_str(), format);
+    cout << "Report Has Been Generated!" << endl;
+    return workbook_close(workbook);
+}
+//Excel Data Handle Class End Here
 //Class Credentials Start Here
 class Credentials
 {
@@ -640,7 +746,7 @@ void Registration::SavingData(int val)
         Account.AddMember("Ads", ads, d.GetAllocator());
         Account.AddMember("subscriptopn", StringRef(Seller::GetSubscription().c_str()), d.GetAllocator());
         Value Purchase(kArrayType);
-        Account.AddMember("History",Purchase,d.GetAllocator());
+        Account.AddMember("History", Purchase, d.GetAllocator());
         Account.AddMember("TotalAds", GetTotalAds(), d.GetAllocator());
         Account.AddMember("AllowedAd", GetAllowedAds(), d.GetAllocator());
         Account.AddMember("ActiveAd", GetActiveAd(), d.GetAllocator());
@@ -816,7 +922,7 @@ void Registration::BuyerSignUp()
 //Categories Class Start Here
 class Categories
 {
-protected:
+public:
     string Category[11] = {"Mobile", "Vehicles", "Land", "Electronics", "Computer", "Fashion", "Cosmetics", "Books", "Funiture", "Gaming Console", "Hobbies"};
 
 public:
@@ -831,17 +937,6 @@ void Categories::DisplayCategory()
     }
 };
 //Categories Class End Here
-//Filter Class Start Here
-class Filter
-{
-private:
-public:
-    void Search(string);
-    void Price(int, int);
-    void Date();
-    void byCategory(string);
-};
-//Filter Class Start Here
 //Produc Class Start's
 class Product : public Categories
 {
@@ -1029,15 +1124,287 @@ public:
     void Listing();
     void EditInformation();
     string AccountType();
+    void Search(string);
+    void Price(int);
+    void byCategory(string);
 };
-void Dashboard::History(){
-    cout<<"User Detail!"<<endl;
+void Dashboard::byCategory(string cat)
+{
+    fstream ifs("Userdetail.json");
+    IStreamWrapper efs(ifs);
+    Document d;
+    d.ParseStream(efs);
+    const Value &Array = d.GetArray();
+    const int index = Array.Size();
+    int x = 0;
+    SumAdd.clear();
+    for (int i = 0; i < index; i++)
+    {
+        const Value &Account = Array[i].GetObject()["Account"];
+        string type = Account.GetObject()["type"].GetString();
+        if (type == "Seller" || type == "Both")
+        {
+            const Value &Ads = Account.GetObject()["Ads"];
+            int ads = Ads.GetArray().Size();
+            if (ads > 0)
+            {
+
+                for (int j = 0; j < ads; j++)
+                {
+                    if (Ads.GetArray()[j].GetObject()["productCategory"].GetString() == cat)
+                    {
+                        x++;
+                        vector<string> tempdata;
+                        for (int k = 0; k < 12; k++)
+                        {
+                            if (k < 7)
+                            {
+                                tempdata.push_back(Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetString());
+                            }
+                            else if (k == 7)
+                            {
+                                tempdata.push_back(to_string(Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetInt()));
+                                // cout<<DisplayAd[k] <<UserAds[i][j]<<endl;
+                            }
+                            else if (k == 8)
+                            {
+                                string y;
+                                bool x = Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetBool();
+                                if (x == true)
+                                {
+                                    y = "True";
+                                }
+                                else
+                                {
+                                    y = "False";
+                                }
+                                tempdata.push_back(y);
+                            }
+                            else if (k == 9)
+                            {
+                                tempdata.push_back(Array[i].GetObject()["Personal"].GetObject()["username"].GetString());
+                            }
+                            else if (k == 10)
+                            {
+                                tempdata.push_back(Array[i].GetObject()["Personal"].GetObject()["phoneNumber"].GetString());
+                            }
+                            else
+                            {
+                                tempdata.push_back(Array[i].GetObject()["userId"].GetString());
+                            }
+                        }
+                        SumAdd.push_back(tempdata);
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < SumAdd.size(); i++)
+    {
+        if (i == 0)
+        {
+            cout << "*************************************************************************************************************************************************************************************" << endl;
+        }
+        cout << "Ad No# Is " << i + 1 << endl;
+        for (int j = 0; j < SumAdd[i].size(); j++)
+        {
+            cout << DisplayAd[j] << SumAdd[i][j] << endl;
+        }
+        cout << "*************************************************************************************************************************************************************************************" << endl;
+    }
+}
+void Dashboard::Search(string cat)
+{
+    fstream ifs("Userdetail.json");
+    IStreamWrapper efs(ifs);
+    Document d;
+    d.ParseStream(efs);
+    const Value &Array = d.GetArray();
+    const int index = Array.Size();
+    int x = 0;
+    SumAdd.clear();
+    for (int i = 0; i < index; i++)
+    {
+        const Value &Account = Array[i].GetObject()["Account"];
+        string type = Account.GetObject()["type"].GetString();
+        if (type == "Seller" || type == "Both")
+        {
+            const Value &Ads = Account.GetObject()["Ads"];
+            int ads = Ads.GetArray().Size();
+            if (ads > 0)
+            {
+
+                for (int j = 0; j < ads; j++)
+                {
+                    if (Ads.GetArray()[j].GetObject()["productCategory"].GetString() == cat || Ads.GetArray()[j].GetObject()["productDescription"].GetString() == cat || Ads.GetArray()[j].GetObject()["productTitle"].GetString() == cat)
+                    {
+                        x++;
+                        vector<string> tempdata;
+                        for (int k = 0; k < 12; k++)
+                        {
+                            if (k < 7)
+                            {
+                                tempdata.push_back(Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetString());
+                            }
+                            else if (k == 7)
+                            {
+                                tempdata.push_back(to_string(Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetInt()));
+                                // cout<<DisplayAd[k] <<UserAds[i][j]<<endl;
+                            }
+                            else if (k == 8)
+                            {
+                                string y;
+                                bool x = Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetBool();
+                                if (x == true)
+                                {
+                                    y = "True";
+                                }
+                                else
+                                {
+                                    y = "False";
+                                }
+                                tempdata.push_back(y);
+                            }
+                            else if (k == 9)
+                            {
+                                tempdata.push_back(Array[i].GetObject()["Personal"].GetObject()["username"].GetString());
+                            }
+                            else if (k == 10)
+                            {
+                                tempdata.push_back(Array[i].GetObject()["Personal"].GetObject()["phoneNumber"].GetString());
+                            }
+                            else
+                            {
+                                tempdata.push_back(Array[i].GetObject()["userId"].GetString());
+                            }
+                        }
+                        SumAdd.push_back(tempdata);
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < SumAdd.size(); i++)
+    {
+        if (i == 0)
+        {
+            cout << "*************************************************************************************************************************************************************************************" << endl;
+        }
+        cout << "Ad No# Is " << i + 1 << endl;
+        for (int j = 0; j < SumAdd[i].size(); j++)
+        {
+            cout << DisplayAd[j] << SumAdd[i][j] << endl;
+        }
+        cout << "*************************************************************************************************************************************************************************************" << endl;
+    }
+}
+void Dashboard::Price(int cat)
+{
+    fstream ifs("Userdetail.json");
+    IStreamWrapper efs(ifs);
+    Document d;
+    d.ParseStream(efs);
+    const Value &Array = d.GetArray();
+    const int index = Array.Size();
+    int x = 0;
+    SumAdd.clear();
+    for (int i = 0; i < index; i++)
+    {
+        const Value &Account = Array[i].GetObject()["Account"];
+        string type = Account.GetObject()["type"].GetString();
+        if (type == "Seller" || type == "Both")
+        {
+            const Value &Ads = Account.GetObject()["Ads"];
+            int ads = Ads.GetArray().Size();
+            if (ads > 0)
+            {
+
+                for (int j = 0; j < ads; j++)
+                {
+                    if (Ads.GetArray()[j].GetObject()["productPrice"].GetInt() <= cat)
+                    {
+                        x++;
+                        vector<string> tempdata;
+                        for (int k = 0; k < 12; k++)
+                        {
+                            if (k < 7)
+                            {
+                                tempdata.push_back(Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetString());
+                            }
+                            else if (k == 7)
+                            {
+                                tempdata.push_back(to_string(Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetInt()));
+                                // cout<<DisplayAd[k] <<UserAds[i][j]<<endl;
+                            }
+                            else if (k == 8)
+                            {
+                                string y;
+                                bool x = Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetBool();
+                                if (x == true)
+                                {
+                                    y = "True";
+                                }
+                                else
+                                {
+                                    y = "False";
+                                }
+                                tempdata.push_back(y);
+                            }
+                            else if (k == 9)
+                            {
+                                tempdata.push_back(Array[i].GetObject()["Personal"].GetObject()["username"].GetString());
+                            }
+                            else if (k == 10)
+                            {
+                                tempdata.push_back(Array[i].GetObject()["Personal"].GetObject()["phoneNumber"].GetString());
+                            }
+                            else
+                            {
+                                tempdata.push_back(Array[i].GetObject()["userId"].GetString());
+                            }
+                        }
+                        SumAdd.push_back(tempdata);
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < SumAdd.size(); i++)
+    {
+        if (i == 0)
+        {
+            cout << "*************************************************************************************************************************************************************************************" << endl;
+        }
+        cout << "Ad No# Is " << i + 1 << endl;
+        for (int j = 0; j < SumAdd[i].size(); j++)
+        {
+            cout << DisplayAd[j] << SumAdd[i][j] << endl;
+        }
+        cout << "*************************************************************************************************************************************************************************************" << endl;
+    }
+}
+void Dashboard::History()
+{
+    cout << "User Detail!" << endl;
 }
 void Dashboard::Listing()
 {
     ifstream ifs("Userdetail.json");
     IStreamWrapper efs(ifs);
     Document d;
+    SumAdd.clear();
     d.ParseStream(efs);
     const Value &Array = d.GetArray();
     const int index = Array.Size();
@@ -1244,7 +1611,7 @@ void SellerDashboard::PostAd()
     {
         if (d.GetArray()[i].GetObject()["userId"].GetString() == Personal[1][1])
         {
-            int x = d.GetArray()[i].GetObject()["Account"].GetObject()["Ads"].GetArray().Size() ;
+            int x = d.GetArray()[i].GetObject()["Account"].GetObject()["Ads"].GetArray().Size();
             int y = GetTotalAds() - x;
             Value ad(kObjectType);
             ad.AddMember("productId", StringRef(GetProductID().c_str()), d.GetAllocator());
@@ -1401,25 +1768,41 @@ void SellerDashboard::editAd()
         cout << "Ad Has Been Edited!" << endl;
     }
 }
-void SellerDashboard::History(){
-    int id =stoi(Personal[0][1]);
+void SellerDashboard::History()
+{
+    Excel obj;
+    int id = stoi(Personal[0][1]);
     ifstream ifs("Userdetail.json");
     IStreamWrapper isw(ifs);
     Document d;
     d.ParseStream(isw);
     int x = d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray().Size();
-    cout<<"Ad Title "<<setw(30)<<"Sell Date "<<setw(31)<<"Price "<<endl;
-    for(int i=0; i<x; i++){
-        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Adtitle"].GetString();
+    cout << "Ad Title " << setw(30) << "Sell Date " << setw(31) << "Price " << endl;
+    for (int i = 0; i < x; i++)
+    {
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Adtitle"].GetString();
         cout.width(30);
-        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Date"].GetString();
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Date"].GetString();
         cout.width(30);
-        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Price"].GetInt()<<endl;           
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Price"].GetInt() << endl;
     }
-    cout<<endl;
+    cout << endl;
+    cout << "--> 1 For Generate Excel File!" << endl;
+    cout << "--> 2 For Skip It" << endl;
+    int mn;
+    cin >> mn;
+    switch (mn)
+    {
+    case 1:
+        obj.SetIndex(id);
+        obj.ForSellerReport();
+        break;
+    default:
+        break;
+    }
 }
 //BuyerDashboard Class Start Here
-class BuyerDashboard : public Dashboard, public Buyer
+class BuyerDashboard : public Dashboard, public Buyer, public Categories
 {
 private:
     vector<vector<string> > mycart;
@@ -1444,8 +1827,8 @@ public:
     void clearAds(int);
     void favouriteToCart();
     void AccountInformation();
-    friend void ClearAd(int, vector <vector <string> > &obj, vector <string> &ref);
-    void Purchase(vector <string> &obj);
+    friend void ClearAd(int, vector<vector<string> > &obj, vector<string> &ref);
+    void Purchase(vector<string> &obj);
     void History();
 };
 void BuyerDashboard::Information(int id)
@@ -1484,7 +1867,7 @@ void BuyerDashboard::addToCart()
     ifstream ifs("Userdetail.json");
     IStreamWrapper efs(ifs);
     Document d;
-    bool ad =true;
+    bool ad = true;
     d.ParseStream(efs);
     int cartSize = d.GetArray()[y].GetObject()["Account"].GetObject()["Cart"].GetArray().Size();
     for (int i = 0; i < cartSize; i++)
@@ -1498,29 +1881,33 @@ void BuyerDashboard::addToCart()
         }
         mycart.push_back(cart);
     }
-    for(int i = 0; i<mycart.size(); i++){
-        if(mycart[i][0] == SumAdd[x-1][0]){
-            ad=false;
+    for (int i = 0; i < mycart.size(); i++)
+    {
+        if (mycart[i][0] == SumAdd[x - 1][0])
+        {
+            ad = false;
         }
     }
-    if(ad == true){
-
-    Value cart(kObjectType);
-    for (int i = 0; i < 12; i++)
+    if (ad == true)
     {
-        cart.AddMember(StringRef(Arr[i].c_str()), StringRef(SumAdd[x - 1][i].c_str()), d.GetAllocator());
+
+        Value cart(kObjectType);
+        for (int i = 0; i < 12; i++)
+        {
+            cart.AddMember(StringRef(Arr[i].c_str()), StringRef(SumAdd[x - 1][i].c_str()), d.GetAllocator());
+        }
+        d.GetArray()[y].GetObject()["Account"].GetObject()["Cart"].PushBack(cart, d.GetAllocator());
+        ifs.close();
+        ofstream isw("Userdetail.json");
+        OStreamWrapper nfw(isw);
+        Writer<OStreamWrapper> writes(nfw);
+        d.Accept(writes);
+        isw.close();
+        cout << "Added To Cart Successfully!" << endl;
     }
-    d.GetArray()[y].GetObject()["Account"].GetObject()["Cart"].PushBack(cart, d.GetAllocator());
-    ifs.close();
-    ofstream isw("Userdetail.json");
-    OStreamWrapper nfw(isw);
-    Writer<OStreamWrapper> writes(nfw);
-    d.Accept(writes);
-    isw.close();
-    cout << "Added To Cart Successfully!" << endl;
-    }
-    else{
-        cout<<"Already In Cart!"<<endl;
+    else
+    {
+        cout << "Already In Cart!" << endl;
     }
 }
 void BuyerDashboard::myCart()
@@ -1752,6 +2139,7 @@ void BuyerDashboard::clearFavourite()
 }
 void BuyerDashboard::checkOut()
 {
+    int a;
     vector<vector<string> > tempads;
     int ads;
     int index = stoi(Personal[0][1]);
@@ -1763,6 +2151,10 @@ void BuyerDashboard::checkOut()
     cout << "Enter Ad No Here : ";
     cin >> ads;
     ads -= 1;
+    cout << "Sellect Payment Methods!" << endl;
+    cout << "-> 1 For Cash On Delivery!" << endl;
+    cout << "-> 2 For Online Payment!" << endl;
+    cin >> a;
     string adid = mycart[ads][0];
     string userID = mycart[ads][11];
     for (SizeType i = 0; i < Oper.GetArray().Size(); i++)
@@ -1816,7 +2208,7 @@ void BuyerDashboard::checkOut()
         string id = Oper.GetArray()[i].GetObject()["userId"].GetString();
         if (id == userID)
         {
-            ClearAd(i, tempads,mycart[ads]);
+            ClearAd(i, tempads, mycart[ads]);
             Purchase(mycart[ads]);
         }
     }
@@ -1910,19 +2302,20 @@ void BuyerDashboard::AccountInformation()
         cout << AccountBuyer[i][0] << " " << AccountBuyer[i][1] << endl;
     }
 }
-void BuyerDashboard::Purchase(vector <string> &obj){
+void BuyerDashboard::Purchase(vector<string> &obj)
+{
     int id = stoi(Personal[0][1]);
     ifstream file("Userdetail.json");
     IStreamWrapper json(file);
     Document d;
     d.ParseStream(json);
     Value Purchase(kObjectType);
-    Purchase.AddMember("Adtitle",StringRef(obj[1].c_str()),d.GetAllocator());
-    Purchase.AddMember("Category",StringRef(obj[3].c_str()),d.GetAllocator());
-    Purchase.AddMember("Date",StringRef(obj[4].c_str()),d.GetAllocator());
-    Purchase.AddMember("Location",StringRef(obj[5].c_str()),d.GetAllocator());
-    Purchase.AddMember("Price",stoi(obj[7]),d.GetAllocator());
-    Purchase.AddMember("Name",StringRef(obj[9].c_str()),d.GetAllocator());
+    Purchase.AddMember("Adtitle", StringRef(obj[1].c_str()), d.GetAllocator());
+    Purchase.AddMember("Category", StringRef(obj[3].c_str()), d.GetAllocator());
+    Purchase.AddMember("Date", StringRef(obj[4].c_str()), d.GetAllocator());
+    Purchase.AddMember("Location", StringRef(obj[5].c_str()), d.GetAllocator());
+    Purchase.AddMember("Price", stoi(obj[7]), d.GetAllocator());
+    Purchase.AddMember("Name", StringRef(obj[9].c_str()), d.GetAllocator());
     d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray().PushBack(Purchase, d.GetAllocator());
     ofstream of("Userdetail.json");
     OStreamWrapper nof(of);
@@ -1930,29 +2323,31 @@ void BuyerDashboard::Purchase(vector <string> &obj){
     d.Accept(output);
     of.close();
 }
-void ClearAd(int id, vector <vector <string> > &obj, vector <string> &ref){
+void ClearAd(int id, vector<vector<string> > &obj, vector<string> &ref)
+{
     ifstream file("Userdetail.json");
     IStreamWrapper json(file);
     Document d;
     d.ParseStream(json);
     d.GetArray()[id].GetObject()["Account"].GetObject()["Ads"].Clear();
-    for(int k =0; k<obj.size(); k++){
+    for (int k = 0; k < obj.size(); k++)
+    {
         Value ad(kObjectType);
         ad.AddMember("productId", StringRef(obj[k][0].c_str()), d.GetAllocator());
-        ad.AddMember("productDescription",  StringRef(obj[k][1].c_str()), d.GetAllocator());
+        ad.AddMember("productDescription", StringRef(obj[k][1].c_str()), d.GetAllocator());
         ad.AddMember("productCategory", StringRef(obj[k][2].c_str()), d.GetAllocator());
-        ad.AddMember("productTitle",  StringRef(obj[k][3].c_str()) ,d.GetAllocator());
-        ad.AddMember("adDate",  StringRef(obj[k][4].c_str()), d.GetAllocator());
-        ad.AddMember("adLocation",  StringRef(obj[k][5].c_str()), d.GetAllocator());
-        ad.AddMember("adAdress",  StringRef(obj[k][6].c_str()), d.GetAllocator());
+        ad.AddMember("productTitle", StringRef(obj[k][3].c_str()), d.GetAllocator());
+        ad.AddMember("adDate", StringRef(obj[k][4].c_str()), d.GetAllocator());
+        ad.AddMember("adLocation", StringRef(obj[k][5].c_str()), d.GetAllocator());
+        ad.AddMember("adAdress", StringRef(obj[k][6].c_str()), d.GetAllocator());
         ad.AddMember("productPrice", stoi(obj[k][7]), d.GetAllocator());
         ad.AddMember("adFeature", true, d.GetAllocator());
-        d.GetArray()[id].GetObject()["Account"].GetObject()["Ads"].PushBack(ad,d.GetAllocator());
+        d.GetArray()[id].GetObject()["Account"].GetObject()["Ads"].PushBack(ad, d.GetAllocator());
     }
     Value History(kObjectType);
-    History.AddMember("Adtitle",StringRef(ref[1].c_str()),d.GetAllocator());
-    History.AddMember("Date",StringRef(ref[4].c_str()),d.GetAllocator());
-    History.AddMember("Price",stoi(ref[7]),d.GetAllocator());
+    History.AddMember("Adtitle", StringRef(ref[1].c_str()), d.GetAllocator());
+    History.AddMember("Date", StringRef(ref[4].c_str()), d.GetAllocator());
+    History.AddMember("Price", stoi(ref[7]), d.GetAllocator());
     d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray().PushBack(History, d.GetAllocator());
     int tempactive = d.GetArray()[id].GetObject()["Account"].GetObject()["ActiveAd"].GetInt();
     --tempactive;
@@ -1961,36 +2356,52 @@ void ClearAd(int id, vector <vector <string> > &obj, vector <string> &ref){
     tempsold++;
     d.GetArray()[id].GetObject()["Account"].GetObject()["SoldGood"].SetInt(tempsold);
     float temprevenue = d.GetArray()[id].GetObject()["Account"].GetObject()["Revenue"].GetFloat();
-    temprevenue +=stoi(ref[7]);
-    d.GetArray()[id].GetObject()["Account"].GetObject()["Revenue"].SetFloat(temprevenue);    
+    temprevenue += stoi(ref[7]);
+    d.GetArray()[id].GetObject()["Account"].GetObject()["Revenue"].SetFloat(temprevenue);
     ofstream of("Userdetail.json");
     OStreamWrapper nof(of);
     Writer<OStreamWrapper> output(nof);
     d.Accept(output);
     of.close();
 }
-void BuyerDashboard::History(){
-    int id =stoi(Personal[0][1]);
+void BuyerDashboard::History()
+{
+    Excel obj;
+    int id = stoi(Personal[0][1]);
     ifstream ifs("Userdetail.json");
     IStreamWrapper isw(ifs);
     Document d;
     d.ParseStream(isw);
     int x = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray().Size();
-    cout<<"Ad Title "<<setw(30)<<"Category"<<setw(30)<<"Sell Date "<<setw(31)<<"Location "<<setw(30)<<"Name"<<setw(30)<<"Price"<<endl;
-    for(int i=0; i<x; i++){
-        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Adtitle"].GetString();
+    cout << "Ad Title " << setw(30) << "Category" << setw(30) << "Sell Date " << setw(31) << "Location " << setw(30) << "Name" << setw(30) << "Price" << endl;
+    for (int i = 0; i < x; i++)
+    {
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Adtitle"].GetString();
         cout.width(30);
-        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Category"].GetString();
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Category"].GetString();
         cout.width(30);
-        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Date"].GetString();
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Date"].GetString();
         cout.width(30);
-        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Location"].GetString();
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Location"].GetString();
         cout.width(30);
-        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Name"].GetString();
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Name"].GetString();
         cout.width(30);
-        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Price"].GetInt()<<endl;           
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Price"].GetInt() << endl;
     }
-    cout<<endl;
+    cout << endl;
+    cout << "--> 1 For Generate Excel File!" << endl;
+    cout << "--> 2 For Skip It" << endl;
+    int mn;
+    cin >> mn;
+    switch (mn)
+    {
+    case 1:
+        obj.SetIndex(id);
+        obj.ForBuyerReport();
+        break;
+    default:
+        break;
+    }
 }
 int main()
 {
@@ -1998,6 +2409,8 @@ int main()
     int temp;
     bool auth;
     string type;
+    string query;
+
 Main:
     Registration Reg;
     Authentications Log;
@@ -2043,7 +2456,7 @@ Main:
             cout << "-> 4 For Explorer Ads!" << endl;
             cout << "-> 5 For Display Personal Information!" << endl;
             cout << "-> 6 For Account Information!" << endl;
-            cout << "-> 7 For Sale's Record!"<<endl;
+            cout << "-> 7 For Sale's Record!" << endl;
             cout << "-> 8 For Logout!" << endl;
             cout << "Enter Here : ";
             int seller;
@@ -2058,14 +2471,14 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto SellerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto SellerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 2:
@@ -2075,14 +2488,14 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto SellerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto SellerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 3:
@@ -2092,31 +2505,62 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto SellerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto SellerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 4:
                 system("clear");
                 Sellers.Listing();
+                cout << "--> 1 For By Category!" << endl;
+                    cout << "--> 2 For Seaching!" << endl;
+                    cout << "--> 3 For Price Range!" << endl;
+                    cout << "Enter Here : ";
+                    int fil;
+                    cin >> fil;
+                    switch (fil)
+                    {
+                    case 1:
+                        Buyer.DisplayCategory();
+                        cout << "Enter Here : ";
+                        int cat;
+                        cin >> cat;
+                        Buyer.byCategory(Buyer.Category[cat - 1]);
+                        goto Cart;
+                        break;
+                    case 2:
+                        cout << "Enter Your Query Here : ";
+                        cin >> query;
+                        Buyer.Search(query);
+                        goto Cart;
+                        break;
+                    case 3:
+                        cout << "Enter Your Range Here : ";
+                        int range;
+                        cin >> range;
+                        Buyer.Price(range);
+                        goto Cart;
+                    default:
+                        break;
+                    }
                 cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto SellerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto SellerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 5:
@@ -2126,14 +2570,14 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto SellerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto SellerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 6:
@@ -2143,14 +2587,14 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto SellerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto SellerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 7:
@@ -2160,14 +2604,14 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto SellerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto SellerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 8:
@@ -2179,8 +2623,8 @@ Main:
             break;
         case 2:
             Buyer.Information(Log.Index());
-            BuyerMenu:
-                system("clear");
+        BuyerMenu:
+            system("clear");
             cout << "--> Press 1 For Explorer Ads!" << endl;
             cout << "--> Press 2 For My Favourite!" << endl;
             cout << "--> Press 3 For My Cart!" << endl;
@@ -2196,9 +2640,11 @@ Main:
             case 1:
                 system("clear");
                 Buyer.Listing();
+            Cart:
                 int ads;
                 cout << "--> Press 1 For Add To Cart!" << endl;
                 cout << "--> Press 2 For Add To Favourite!" << endl;
+                cout << "--> Press 3 For Apply Filters!" << endl;
                 cout << "Enter Here : ";
                 cin >> ads;
                 switch (ads)
@@ -2209,6 +2655,38 @@ Main:
                 case 2:
                     Buyer.adToFavourite();
                     break;
+                case 3:
+                    cout << "--> 1 For By Category!" << endl;
+                    cout << "--> 2 For Seaching!" << endl;
+                    cout << "--> 3 For Price Range!" << endl;
+                    cout << "Enter Here : ";
+                    int fil;
+                    cin >> fil;
+                    switch (fil)
+                    {
+                    case 1:
+                        Buyer.DisplayCategory();
+                        cout << "Enter Here : ";
+                        int cat;
+                        cin >> cat;
+                        Buyer.byCategory(Buyer.Category[cat - 1]);
+                        goto Cart;
+                        break;
+                    case 2:
+                        cout << "Enter Your Query Here : ";
+                        cin >> query;
+                        Buyer.Search(query);
+                        goto Cart;
+                        break;
+                    case 3:
+                        cout << "Enter Your Range Here : ";
+                        int range;
+                        cin >> range;
+                        Buyer.Price(range);
+                        goto Cart;
+                    default:
+                        break;
+                    }
                 default:
                     break;
                 }
@@ -2217,14 +2695,14 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto BuyerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto BuyerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 2:
@@ -2254,14 +2732,14 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto BuyerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto BuyerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 3:
@@ -2291,31 +2769,31 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto BuyerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto BuyerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 4:
                 system("clear");
                 Buyer.PersonalInformation();
-                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;                
+                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto BuyerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto BuyerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 5:
@@ -2325,14 +2803,14 @@ Main:
                 cin >> go;
                 switch (go)
                 {
-                    case 1: 
-                        goto BuyerMenu;
-                        break;
-                    case 0:
-                        goto Main;
-                        break;
-                    default:
-                        break;
+                case 1:
+                    goto BuyerMenu;
+                    break;
+                case 0:
+                    goto Main;
+                    break;
+                default:
+                    break;
                 }
                 break;
             case 6:
@@ -2357,7 +2835,7 @@ Main:
             Reg.SellerSignUp();
             Reg.SavingData(temp);
             break;
-        case 2: 
+        case 2:
             Reg.BuyerSignUp();
             Reg.SavingData(temp);
         default:
@@ -2367,5 +2845,5 @@ Main:
         break;
     default:
         break;
-    }    
+    }
 }

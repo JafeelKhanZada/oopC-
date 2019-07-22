@@ -15,7 +15,17 @@
     },
     "Account": {
         "type": "Seller",
-        "Ads": [],
+        "Ads": [{
+            "productId": "KJbJ1oYvOU",
+            "productDescription": "blackberry",
+            "productCategory": "Mobile",
+            "productTitle": "BlackBerry",
+            "adDate": "07-22-2019",
+            "adLocation": "Lahore",
+            "adAdress": "Lahore Punjab,Pakistan",
+            "productPrice": 100,
+            "adFeature": false
+        }],
         "subscriptopn": "Free",
         "History": [{
             "Adtitle": "Iphone Xs Max ",
@@ -29,12 +39,16 @@
             "Adtitle": "ajfdjnfa",
             "Date": "07-22-2019",
             "Price": 12345
+        }, {
+            "Adtitle": "BlackBerry Q20",
+            "Date": "07-22-2019",
+            "Price": 2000
         }],
         "TotalAds": 10,
         "AllowedAd": 10,
         "ActiveAd": 0,
-        "SoldGood": 3,
-        "Revenue": 33345.0
+        "SoldGood": 4,
+        "Revenue": 35345.0
     }
 }, {
     "userId": "DNUGwZxpTfpe",
@@ -80,6 +94,13 @@
             "Date": "07-22-2019",
             "Location": "Lahore",
             "Price": 12345,
+            "Name": "Jafeel"
+        }, {
+            "Adtitle": "BlackBerry Q20",
+            "Category": "Mobile",
+            "Date": "07-22-2019",
+            "Location": "Lahore",
+            "Price": 2000,
             "Name": "Jafeel"
         }]
     }
