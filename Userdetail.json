@@ -1,1 +1,64 @@
-[{"userId":"JfZt22XnJYxr","Personal":{"fname":"Jafeel","lname":"Waheed","username":"jaffy","phoneNumber":"0317-4290600","gender":"Male","password":"123","email":"jafeel@gmail.com","city":"Lahore","state":"Punjab","country":"Pakistan","joinDate":""},"Account":{"type":"Seller","Ads":[],"subscriptopn":"Standard","TotalAds":20,"AllowedAd":20,"ActiveAd":0,"SoldGood":0,"Revenue":0.0}},{"userId":"iBFURUr0XaPr","Personal":{"fname":"Memona","lname":"Parveez","username":"mona","phoneNumber":"0382-1238123","gender":"Female","password":"123","email":"memona@gmail.com","city":"Lahore","state":"Punjab","country":"Pakistan","joinDate":""},"Account":{"type":"Buyer","totalBid":20,"Bidded":0,"WonBids":0,"LossBids":0,"Cart":[],"Favourite":[],"Purchase":[]}},{"userId":"ylQ81WtncCu9","Personal":{"fname":"Shahroz","lname":"Noor","username":"shahroz","phoneNumber":"0321-3128412","gender":"Male","password":"123","email":"shahroz@gmail.com","city":"Lahore","state":"Punjab","country":"Pakistan","joinDate":""},"Account":{"type":"Seller","Ads":[],"subscriptopn":"VVIP","TotalAds":50,"AllowedAd":50,"ActiveAd":0,"SoldGood":0,"Revenue":0.0}}]
+[{
+    "userId": "r7PWx8cCJWOd",
+    "Personal": {
+        "fname": "Jafeel",
+        "lname": "Khan",
+        "username": "JafeelKhanZada",
+        "phoneNumber": "0317-4290600",
+        "gender": "Male",
+        "password": "123",
+        "email": "jafeel@gmail.com",
+        "city": "Lahore",
+        "state": "Punjab",
+        "country": "Pakistan",
+        "joinDate": "07-22-2019"
+    },
+    "Account": {
+        "type": "Seller",
+        "Ads": [],
+        "subscriptopn": "Free",
+        "History": [{
+            "Adtitle": "Hello World",
+            "Date": "07-22-2019",
+            "Price": 100
+        }],
+        "TotalAds": 10,
+        "AllowedAd": 9,
+        "ActiveAd": 1,
+        "SoldGood": 0,
+        "Revenue": 0.0
+    }
+}, {
+    "userId": "b3NHTWbVRkUB",
+    "Personal": {
+        "fname": "memona",
+        "lname": "memona",
+        "username": "mona",
+        "phoneNumber": "1",
+        "gender": "1",
+        "password": "1",
+        "email": "1",
+        "city": "1",
+        "state": "1",
+        "country": "1",
+        "joinDate": ""
+    },
+    "Account": {
+        "type": "Buyer",
+        "Subscription": "Free",
+        "totalBid": 10,
+        "Bidded": 0,
+        "WonBids": 0,
+        "LossBids": 0,
+        "Cart": [],
+        "Favourite": [],
+        "Purchase": [{
+            "Adtitle": "Hello World",
+            "Category": "Mobile",
+            "Date": "07-22-2019",
+            "Location": "Lahore",
+            "Price": 100,
+            "Name": "JafeelKhanZada"
+        }]
+    }
+}] 
