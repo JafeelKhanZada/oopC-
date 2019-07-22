@@ -1023,12 +1023,16 @@ public:
     //Protype Of Dashboard Methods
     void LogOut();
     virtual void Information(int);
-    void PersonalInformation();
     virtual void AccountInformation();
+    virtual void History();
+    void PersonalInformation();
     void Listing();
     void EditInformation();
     string AccountType();
 };
+void Dashboard::History(){
+    cout<<"User Detail!"<<endl;
+}
 void Dashboard::Listing()
 {
     ifstream ifs("Userdetail.json");
@@ -1201,6 +1205,7 @@ public:
     void SetSeller();
     void selectCategory(int);
     void PostAd();
+    void History();
 };
 //Scope Resoluted Class Method Defination
 void SellerDashboard::selectCategory(int x)
@@ -1239,7 +1244,7 @@ void SellerDashboard::PostAd()
     {
         if (d.GetArray()[i].GetObject()["userId"].GetString() == Personal[1][1])
         {
-            int x = d.GetArray()[i].GetObject()["Account"].GetObject()["Ads"].GetArray().Size() + 1;
+            int x = d.GetArray()[i].GetObject()["Account"].GetObject()["Ads"].GetArray().Size() ;
             int y = GetTotalAds() - x;
             Value ad(kObjectType);
             ad.AddMember("productId", StringRef(GetProductID().c_str()), d.GetAllocator());
@@ -1396,6 +1401,23 @@ void SellerDashboard::editAd()
         cout << "Ad Has Been Edited!" << endl;
     }
 }
+void SellerDashboard::History(){
+    int id =stoi(Personal[0][1]);
+    ifstream ifs("Userdetail.json");
+    IStreamWrapper isw(ifs);
+    Document d;
+    d.ParseStream(isw);
+    int x = d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray().Size();
+    cout<<"Ad Title "<<setw(30)<<"Sell Date "<<setw(31)<<"Price "<<endl;
+    for(int i=0; i<x; i++){
+        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Adtitle"].GetString();
+        cout.width(30);
+        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Date"].GetString();
+        cout.width(30);
+        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Price"].GetInt()<<endl;           
+    }
+    cout<<endl;
+}
 //BuyerDashboard Class Start Here
 class BuyerDashboard : public Dashboard, public Buyer
 {
@@ -1424,6 +1446,7 @@ public:
     void AccountInformation();
     friend void ClearAd(int, vector <vector <string> > &obj, vector <string> &ref);
     void Purchase(vector <string> &obj);
+    void History();
 };
 void BuyerDashboard::Information(int id)
 {
@@ -1931,11 +1954,43 @@ void ClearAd(int id, vector <vector <string> > &obj, vector <string> &ref){
     History.AddMember("Date",StringRef(ref[4].c_str()),d.GetAllocator());
     History.AddMember("Price",stoi(ref[7]),d.GetAllocator());
     d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray().PushBack(History, d.GetAllocator());
+    int tempactive = d.GetArray()[id].GetObject()["Account"].GetObject()["ActiveAd"].GetInt();
+    --tempactive;
+    d.GetArray()[id].GetObject()["Account"].GetObject()["ActiveAd"].SetInt(tempactive);
+    int tempsold = d.GetArray()[id].GetObject()["Account"].GetObject()["SoldGood"].GetInt();
+    tempsold++;
+    d.GetArray()[id].GetObject()["Account"].GetObject()["SoldGood"].SetInt(tempsold);
+    float temprevenue = d.GetArray()[id].GetObject()["Account"].GetObject()["Revenue"].GetFloat();
+    temprevenue +=stoi(ref[7]);
+    d.GetArray()[id].GetObject()["Account"].GetObject()["Revenue"].SetFloat(temprevenue);    
     ofstream of("Userdetail.json");
     OStreamWrapper nof(of);
     Writer<OStreamWrapper> output(nof);
     d.Accept(output);
     of.close();
+}
+void BuyerDashboard::History(){
+    int id =stoi(Personal[0][1]);
+    ifstream ifs("Userdetail.json");
+    IStreamWrapper isw(ifs);
+    Document d;
+    d.ParseStream(isw);
+    int x = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray().Size();
+    cout<<"Ad Title "<<setw(30)<<"Category"<<setw(30)<<"Sell Date "<<setw(31)<<"Location "<<setw(30)<<"Name"<<setw(30)<<"Price"<<endl;
+    for(int i=0; i<x; i++){
+        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Adtitle"].GetString();
+        cout.width(30);
+        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Category"].GetString();
+        cout.width(30);
+        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Date"].GetString();
+        cout.width(30);
+        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Location"].GetString();
+        cout.width(30);
+        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Name"].GetString();
+        cout.width(30);
+        cout <<d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Price"].GetInt()<<endl;           
+    }
+    cout<<endl;
 }
 int main()
 {
@@ -1958,6 +2013,7 @@ Main:
     switch (x)
     {
     case 1:
+        system("clear");
         cout << "Enter Your Email Here : ";
         cin >> email;
         cout << "Enter Your Password Here : ";
@@ -1980,19 +2036,22 @@ Main:
         case 1:
             Sellers.Information(Log.Index());
         SellerMenu:
+            system("clear");
             cout << "-> 1 For Create New Ad!" << endl;
             cout << "-> 2 For My Ads!" << endl;
             cout << "-> 3 Edit Ad!" << endl;
             cout << "-> 4 For Explorer Ads!" << endl;
             cout << "-> 5 For Display Personal Information!" << endl;
             cout << "-> 6 For Account Information!" << endl;
-            cout << "-> 7 For Logout!" << endl;
+            cout << "-> 7 For Sale's Record!"<<endl;
+            cout << "-> 8 For Logout!" << endl;
             cout << "Enter Here : ";
             int seller;
             cin >> seller;
             switch (seller)
             {
             case 1:
+                system("clear");
                 Sellers.createAd();
                 cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
                 int go;
@@ -2010,6 +2069,7 @@ Main:
                 }
                 break;
             case 2:
+                system("clear");
                 Sellers.myAd();
                 cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
                 cin >> go;
@@ -2026,6 +2086,7 @@ Main:
                 }
                 break;
             case 3:
+                system("clear");
                 Sellers.editAd();
                 cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
                 cin >> go;
@@ -2042,6 +2103,7 @@ Main:
                 }
                 break;
             case 4:
+                system("clear");
                 Sellers.Listing();
                 cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
                 cin >> go;
@@ -2058,6 +2120,7 @@ Main:
                 }
                 break;
             case 5:
+                system("clear");
                 Sellers.PersonalInformation();
                 cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
                 cin >> go;
@@ -2074,6 +2137,7 @@ Main:
                 }
                 break;
             case 6:
+                system("clear");
                 Sellers.AccountInformation();
                 cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
                 cin >> go;
@@ -2090,6 +2154,23 @@ Main:
                 }
                 break;
             case 7:
+                system("clear");
+                Sellers.History();
+                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                cin >> go;
+                switch (go)
+                {
+                    case 1: 
+                        goto SellerMenu;
+                        break;
+                    case 0:
+                        goto Main;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case 8:
                 goto Main;
                 break;
             default:
@@ -2099,18 +2180,21 @@ Main:
         case 2:
             Buyer.Information(Log.Index());
             BuyerMenu:
+                system("clear");
             cout << "--> Press 1 For Explorer Ads!" << endl;
             cout << "--> Press 2 For My Favourite!" << endl;
             cout << "--> Press 3 For My Cart!" << endl;
             cout << "--> Press 4 For Display Personal Information!" << endl;
             cout << "--> Press 5 For Account Information!" << endl;
-            cout << "--> Press 6 For Logout!" << endl;
+            cout << "--> Press 6 For History!" << endl;
+            cout << "--> Press 7 For Logout!" << endl;
             cout << "Enter Here : ";
             int buyer;
             cin >> buyer;
             switch (buyer)
             {
             case 1:
+                system("clear");
                 Buyer.Listing();
                 int ads;
                 cout << "--> Press 1 For Add To Cart!" << endl;
@@ -2128,8 +2212,23 @@ Main:
                 default:
                     break;
                 }
+                int go;
+                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                cin >> go;
+                switch (go)
+                {
+                    case 1: 
+                        goto BuyerMenu;
+                        break;
+                    case 0:
+                        goto Main;
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case 2:
+                system("clear");
                 Buyer.myFavourite();
                 int fav;
                 cout << "--> Press 1 For Favourite Item To Cart!" << endl;
@@ -2151,8 +2250,22 @@ Main:
                 default:
                     break;
                 }
+                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                cin >> go;
+                switch (go)
+                {
+                    case 1: 
+                        goto BuyerMenu;
+                        break;
+                    case 0:
+                        goto Main;
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case 3:
+                system("clear");
                 Buyer.myCart();
                 int cart;
                 cout << "--> Press 1 For Delete Item From Cart!" << endl;
@@ -2174,14 +2287,59 @@ Main:
                 default:
                     break;
                 }
+                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                cin >> go;
+                switch (go)
+                {
+                    case 1: 
+                        goto BuyerMenu;
+                        break;
+                    case 0:
+                        goto Main;
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case 4:
+                system("clear");
                 Buyer.PersonalInformation();
+                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;                
+                cin >> go;
+                switch (go)
+                {
+                    case 1: 
+                        goto BuyerMenu;
+                        break;
+                    case 0:
+                        goto Main;
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case 5:
+                system("clear");
                 Buyer.AccountInformation();
+                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                cin >> go;
+                switch (go)
+                {
+                    case 1: 
+                        goto BuyerMenu;
+                        break;
+                    case 0:
+                        goto Main;
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case 6:
+                Buyer.History();
+                break;
+            case 7:
+                goto Main;
                 break;
             default:
                 break;
@@ -2199,7 +2357,7 @@ Main:
             Reg.SellerSignUp();
             Reg.SavingData(temp);
             break;
-        case 2:
+        case 2: 
             Reg.BuyerSignUp();
             Reg.SavingData(temp);
         default:

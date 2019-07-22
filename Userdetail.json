@@ -1,9 +1,9 @@
 [{
-    "userId": "r7PWx8cCJWOd",
+    "userId": "tDaArSkwR7DQ",
     "Personal": {
         "fname": "Jafeel",
-        "lname": "Khan",
-        "username": "JafeelKhanZada",
+        "lname": "Waheed",
+        "username": "Jafeel",
         "phoneNumber": "0317-4290600",
         "gender": "Male",
         "password": "123",
@@ -18,29 +18,37 @@
         "Ads": [],
         "subscriptopn": "Free",
         "History": [{
-            "Adtitle": "Hello World",
+            "Adtitle": "Iphone Xs Max ",
             "Date": "07-22-2019",
-            "Price": 100
+            "Price": 1000
+        }, {
+            "Adtitle": "Electronics",
+            "Date": "07-22-2019",
+            "Price": 20000
+        }, {
+            "Adtitle": "ajfdjnfa",
+            "Date": "07-22-2019",
+            "Price": 12345
         }],
         "TotalAds": 10,
-        "AllowedAd": 9,
-        "ActiveAd": 1,
-        "SoldGood": 0,
-        "Revenue": 0.0
+        "AllowedAd": 10,
+        "ActiveAd": 0,
+        "SoldGood": 3,
+        "Revenue": 33345.0
     }
 }, {
-    "userId": "b3NHTWbVRkUB",
+    "userId": "DNUGwZxpTfpe",
     "Personal": {
-        "fname": "memona",
-        "lname": "memona",
-        "username": "mona",
-        "phoneNumber": "1",
-        "gender": "1",
-        "password": "1",
-        "email": "1",
-        "city": "1",
-        "state": "1",
-        "country": "1",
+        "fname": "Memona",
+        "lname": "Pervez",
+        "username": "Mona",
+        "phoneNumber": "0321-5729121",
+        "gender": "Female",
+        "password": "123",
+        "email": "memona@gmail.com",
+        "city": "Lahore",
+        "state": "Pakistan",
+        "country": "Punjab",
         "joinDate": ""
     },
     "Account": {
@@ -53,12 +61,26 @@
         "Cart": [],
         "Favourite": [],
         "Purchase": [{
-            "Adtitle": "Hello World",
+            "Adtitle": "Iphone Xs Max ",
             "Category": "Mobile",
             "Date": "07-22-2019",
             "Location": "Lahore",
-            "Price": 100,
-            "Name": "JafeelKhanZada"
+            "Price": 1000,
+            "Name": "Jafeel"
+        }, {
+            "Adtitle": "Electronics",
+            "Category": "Laptop",
+            "Date": "07-22-2019",
+            "Location": "Lahore",
+            "Price": 20000,
+            "Name": "Jafeel"
+        }, {
+            "Adtitle": "ajfdjnfa",
+            "Category": "Mobile",
+            "Date": "07-22-2019",
+            "Location": "Lahore",
+            "Price": 12345,
+            "Name": "Jafeel"
         }]
     }
-}] 
+}]
