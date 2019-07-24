@@ -12,6 +12,7 @@
         "initializer_list": "cpp",
         "string_view": "cpp",
         "utility": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "ios": "cpp"
     }
 }

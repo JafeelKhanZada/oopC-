@@ -1,5 +1,6 @@
 // Including Header Files!
 #include <iostream>
+#include <unistd.h>
 #include <string>
 #include <fstream>
 #include <vector>
@@ -16,6 +17,7 @@
 using namespace rapidjson;
 using namespace std;
 void ClearAd(int id, vector<vector<string> > &obj, vector<string> &ref);
+void escape(int);
 //Excel Data Handle Class Start Here
 class Excel
 {
@@ -180,7 +182,7 @@ private:
 
 protected:
     const char *userAttributes[12] = {"fname", "lname", "username", "phoneNumber", "gender", "email", "city", "state", "country", "joinDate", "password"};
-    const char *SellerAccountAttribute[7] = {"type", "subscriptopn", "TotalAds", "AllowedAd", "ActiveAd", "SoldGood", "Revenue"};
+    const char *SellerAccountAttribute[7] = {"type", "Subscription", "TotalAds", "AllowedAd", "ActiveAd", "SoldGood", "Revenue"};
     const char *sellerAttributes[9] = {"productId", "productTitle", "productDescription", "productCategory", "adDate", "adLocation", "adAdress", "productPrice", "adFeature"};
     string Personal[13][2] = {{"Index Is", ""}, {"Id", ""}, {"First Name", ""}, {"Last Name", ""}, {"Username ", ""}, {"Phone Number", ""}, {"Gender", ""}, {"Email", ""}, {"City", ""}, {"State", ""}, {"Country", ""}, {"Joining Date", ""}, {"Password", ""}};
     string Account[7][2] = {{"Type ", ""}, {"Subscription ", ""}, {"TotalAds", ""}, {"Allowed Ads", ""}, {"Active Ads ", ""}, {"Good Solded", ""}, {"Revenue", ""}};
@@ -223,6 +225,7 @@ void Authentications::Login(string email, string pass)
         {
             cout << "Invalid Credentials!" << endl;
             break;
+            Login(email,pass);
         }
     }
 }
@@ -744,7 +747,7 @@ void Registration::SavingData(int val)
         Account.AddMember("type", StringRef(Seller::GetAccountType().c_str()), d.GetAllocator());
         Value ads(kArrayType);
         Account.AddMember("Ads", ads, d.GetAllocator());
-        Account.AddMember("subscriptopn", StringRef(Seller::GetSubscription().c_str()), d.GetAllocator());
+        Account.AddMember("Subscription", StringRef(Seller::GetSubscription().c_str()), d.GetAllocator());
         Value Purchase(kArrayType);
         Account.AddMember("History", Purchase, d.GetAllocator());
         Account.AddMember("TotalAds", GetTotalAds(), d.GetAllocator());
@@ -792,33 +795,38 @@ void Registration::SavingData(int val)
 }
 int Registration::GenericSignUp()
 {
+    system("clear");
     int x;
-    cout << "Enter Your First Name Here : ";
+    cout<<"\n\n";
+    cout<<setw(50)<<"SIGN UP"<<"\n\n";
+    cout<<setw(45);
+    cout << "Enter Your First Name Here : "<<setw(45);
     cin >> fname;
-    cout << "Enter Your Last Name Here : ";
+    cout <<endl<< "Enter Your Last Name Here : "<<setw(45);
     cin >> lname;
-    cout << "Enter Your Username Here : ";
+    cout <<endl<< "Enter Your Username Here : "<<setw(45);
     cin >> username;
-    cout << "Enter Your Email Here : ";
+    cout <<endl<< "Enter Your Email Here : "<<setw(45);
     cin >> email;
-    cout << "Enter Your Password Here : ";
+    cout <<endl<< "Enter Your Password Here : "<<setw(45);
     cin >> pass;
-    cout << "Enter Your Phone Number Here : ";
+    cout <<endl<< "Enter Your Phone Number Here : "<<setw(45);
     cin >> phone;
-    cout << "Enter Your Gender Here : ";
+    cout <<endl<< "Enter Your Gender Here : "<<setw(45);
     cin >> gender;
-    cout << "Enter Your City Here : ";
+    cout <<endl<< "Enter Your City Here : "<<setw(45);
     cin.ignore();
     getline(cin, city);
-    cout << "Enter Your State Here : ";
+    cout<<endl << "Enter Your State Here : "<<setw(45);
     cin >> state;
-    cout << "Enter Your Country Here : ";
+    cout<<endl << "Enter Your Country Here : "<<setw(45);
     cin >> country;
-    cout << "Select Your Account Type " << endl;
+    cout<<endl << "Select Your Account Type " << endl<<setw(23);
     for (int i = 0; i < 3; i++)
     {
-        cout << "-> " << i + 1 << " For " << acc[i] << endl;
+        cout << "-> " << i + 1 << " For " << acc[i] << endl<<setw(23);
     }
+    cout<<setw(33)<<"Enter Here : ";
     cin >> x;
     return x;
 };
@@ -838,11 +846,17 @@ void Registration::SellerSignUp()
     Seller::SetJoinDate(Obj.GetDate());
     Seller::SetAccountType(acc[0]);
     int y;
-    cout << "Select Your Subscription Plan " << endl;
+    cout<<setw(50) << "Select Your Subscription Plan " <<setw(23);
     for (int i = 0; i < 3; i++)
     {
-        cout << "-> " << i + 1 << " For " << sub[i] << endl;
+        if(i<2){
+        cout<<endl << "-> " << i + 1 << " For " << sub[i] <<setw(23);
+        }
+        else{
+        cout<<endl << "-> " << i + 1 << " For " << sub[i];
+        }
     }
+    cout<<endl<<setw(33)<<"Enter Here : ";
     cin >> y;
     switch (y)
     {
@@ -887,12 +901,14 @@ void Registration::BuyerSignUp()
     Buyer::SetPhoneNumber(phone);
     Buyer::SetJoinDate(joindate);
     Buyer::SetAccountType(acc[1]);
+    Buyer::SetJoinDate(Obj.GetDate());
     int y;
-    cout << "Select Your Subscription Plan " << endl;
+    cout<<setw(50) << "Select Your Subscription Plan " <<endl;
     for (int i = 0; i < 3; i++)
     {
-        cout << "-> " << i + 1 << " For " << sub[i] << endl;
+        cout<<setw(23) << "-> " << i + 1 << " For " << sub[i] << endl;
     }
+    cout<<setw(33)<<"Enter Here : ";
     cin >> y;
     switch (y)
     {
@@ -1130,6 +1146,7 @@ public:
 };
 void Dashboard::byCategory(string cat)
 {
+    system("clear");
     fstream ifs("Userdetail.json");
     IStreamWrapper efs(ifs);
     Document d;
@@ -1203,22 +1220,29 @@ void Dashboard::byCategory(string cat)
             }
         }
     }
+     if(SumAdd.size() >0){
     for (int i = 0; i < SumAdd.size(); i++)
     {
         if (i == 0)
         {
-            cout << "*************************************************************************************************************************************************************************************" << endl;
+            cout << "*************************************************************************************************" << endl;
         }
         cout << "Ad No# Is " << i + 1 << endl;
         for (int j = 0; j < SumAdd[i].size(); j++)
         {
             cout << DisplayAd[j] << SumAdd[i][j] << endl;
         }
-        cout << "*************************************************************************************************************************************************************************************" << endl;
+        cout << "*************************************************************************************************" << endl;
+    }
+    }
+    else{
+        cout<<"\n\n\n\n\n\n\n\n\n"<<setw(60);
+        cout<<"No Ads Available Now!"<<endl;
     }
 }
 void Dashboard::Search(string cat)
 {
+    system("clear");
     fstream ifs("Userdetail.json");
     IStreamWrapper efs(ifs);
     Document d;
@@ -1292,22 +1316,30 @@ void Dashboard::Search(string cat)
             }
         }
     }
+    if(SumAdd.size() >0){
     for (int i = 0; i < SumAdd.size(); i++)
     {
         if (i == 0)
         {
-            cout << "*************************************************************************************************************************************************************************************" << endl;
+            cout << "*************************************************************************************************" << endl;
         }
         cout << "Ad No# Is " << i + 1 << endl;
         for (int j = 0; j < SumAdd[i].size(); j++)
         {
             cout << DisplayAd[j] << SumAdd[i][j] << endl;
         }
-        cout << "*************************************************************************************************************************************************************************************" << endl;
+        cout << "*************************************************************************************************" << endl;
     }
+    }
+    else{
+        cout<<"\n\n\n\n\n\n\n\n\n"<<setw(60);
+        cout<<"No Ads Available Now!"<<endl;
+    }
+
 }
 void Dashboard::Price(int cat)
 {
+    system("clear");
     fstream ifs("Userdetail.json");
     IStreamWrapper efs(ifs);
     Document d;
@@ -1381,18 +1413,24 @@ void Dashboard::Price(int cat)
             }
         }
     }
+    if(SumAdd.size() >0){
     for (int i = 0; i < SumAdd.size(); i++)
     {
         if (i == 0)
         {
-            cout << "*************************************************************************************************************************************************************************************" << endl;
+            cout << "*************************************************************************************************" << endl;
         }
         cout << "Ad No# Is " << i + 1 << endl;
         for (int j = 0; j < SumAdd[i].size(); j++)
         {
             cout << DisplayAd[j] << SumAdd[i][j] << endl;
         }
-        cout << "*************************************************************************************************************************************************************************************" << endl;
+        cout << "*************************************************************************************************" << endl;
+    }
+    }
+    else{
+        cout<<"\n\n\n\n\n\n\n\n\n"<<setw(60);
+        cout<<"No Ads Available Now!"<<endl;
     }
 }
 void Dashboard::History()
@@ -1406,20 +1444,16 @@ void Dashboard::Listing()
     Document d;
     SumAdd.clear();
     d.ParseStream(efs);
-    const Value &Array = d.GetArray();
-    const int index = Array.Size();
+    const int index = d.GetArray().Size();
     int x = 0;
-    for (int i = 0; i < index; i++)
+    for (SizeType i = 0; i < index; i++)
     {
-        const Value &Account = Array[i].GetObject()["Account"];
-        string type = Account.GetObject()["type"].GetString();
-        if (type == "Seller" || type == "Both")
+        string type = d.GetArray()[i].GetObject()["Account"].GetObject()["type"].GetString();
+        if (type == "Seller")
         {
-            const Value &Ads = Account.GetObject()["Ads"];
-            int ads = Ads.GetArray().Size();
+            int ads = d.GetArray()[i].GetObject()["Account"].GetObject()["Ads"].Size();
             if (ads > 0)
             {
-
                 for (int j = 0; j < ads; j++)
                 {
                     x++;
@@ -1428,17 +1462,17 @@ void Dashboard::Listing()
                     {
                         if (k < 7)
                         {
-                            tempdata.push_back(Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetString());
+                            tempdata.push_back(d.GetArray()[i].GetObject()["Account"].GetObject()["Ads"].GetArray()[j].GetObject()[sellerAttributes[k]].GetString());
                         }
                         else if (k == 7)
                         {
-                            tempdata.push_back(to_string(Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetInt()));
-                            // cout<<DisplayAd[k] <<UserAds[i][j]<<endl;
+                            tempdata.push_back(to_string(d.GetArray()[i].GetObject()["Account"].GetObject()["Ads"].GetArray()[j].GetObject()[sellerAttributes[k]].GetInt()));
+                            // cout<<DisplayAd[k] <<Userd.GetArray()[i].GetObject()["Account"].GetObject()["Ads"][i][j]<<endl;
                         }
                         else if (k == 8)
                         {
                             string y;
-                            bool x = Ads.GetArray()[j].GetObject()[sellerAttributes[k]].GetBool();
+                            bool x = d.GetArray()[i].GetObject()["Account"].GetObject()["Ads"].GetArray()[j].GetObject()[sellerAttributes[k]].GetBool();
                             if (x == true)
                             {
                                 y = "True";
@@ -1451,38 +1485,40 @@ void Dashboard::Listing()
                         }
                         else if (k == 9)
                         {
-                            tempdata.push_back(Array[i].GetObject()["Personal"].GetObject()["username"].GetString());
+                            tempdata.push_back(d.GetArray()[i].GetObject()["Personal"].GetObject()["username"].GetString());
                         }
                         else if (k == 10)
                         {
-                            tempdata.push_back(Array[i].GetObject()["Personal"].GetObject()["phoneNumber"].GetString());
+                            tempdata.push_back(d.GetArray()[i].GetObject()["Personal"].GetObject()["phoneNumber"].GetString());
                         }
                         else
                         {
-                            tempdata.push_back(Array[i].GetObject()["userId"].GetString());
+                            tempdata.push_back(d.GetArray()[i].GetObject()["userId"].GetString());
                         }
                     }
                     SumAdd.push_back(tempdata);
                 }
             }
-            else
-            {
-                break;
-            }
         }
     }
+     if(SumAdd.size() >0){
     for (int i = 0; i < SumAdd.size(); i++)
     {
         if (i == 0)
         {
-            cout << "*************************************************************************************************************************************************************************************" << endl;
+            cout << "*************************************************************************************************" << endl;
         }
         cout << "Ad No# Is " << i + 1 << endl;
         for (int j = 0; j < SumAdd[i].size(); j++)
         {
             cout << DisplayAd[j] << SumAdd[i][j] << endl;
         }
-        cout << "*************************************************************************************************************************************************************************************" << endl;
+        cout << "*************************************************************************************************" << endl;
+    }
+    }
+    else{
+        cout<<"\n\n\n\n\n\n\n\n\n"<<setw(60);
+        cout<<"No Ads Available Now!"<<endl;
     }
 }
 void Dashboard::Information(int id)
@@ -1526,9 +1562,10 @@ void Dashboard::Information(int id)
 }
 void Dashboard::PersonalInformation()
 {
-    for (int i = 0; i < 13; i++)
+    cout<<"\n\n\n\n\n\n\n"<<setw(60)<<"Personal Information"<<endl<<endl;
+    for (int i = 2; i < 12; i++)
     {
-        cout << Personal[i][0] << " " << Personal[i][1] << endl;
+        cout <<setw(40)<< Personal[i][0] << " Is :"<<setw(20) << Personal[i][1] << endl<<endl;
     }
 }
 string Dashboard::AccountType()
@@ -1537,9 +1574,10 @@ string Dashboard::AccountType()
 }
 void Dashboard::AccountInformation()
 {
+    cout<<"\n\n\n\n\n\n\n\n\n"<<setw(56)<<"Account Information"<<endl<<endl;
     for (int i = 0; i < 7; i++)
     {
-        cout << Account[i][0] << " " << Account[i][1] << endl;
+        cout<<setw(41) << Account[i][0] << " Is : \t" << Account[i][1] << endl<<endl;
     }
 }
 //Dashboard Class End Here
@@ -1601,6 +1639,7 @@ void SellerDashboard::SetSeller()
     SetSoldGood(stoi(Account[5][1]));
     SetRevenue(stoi(Account[6][1]));
 }
+// g++ project.cpp -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
 void SellerDashboard::PostAd()
 {
     ifstream file("Userdetail.json");
@@ -1677,11 +1716,14 @@ void SellerDashboard::myAd()
     UserAds.clear();
     int index = stoi(Personal[0][1]);
     int looping = d.GetArray()[index].GetObject()["Account"].GetObject()["Ads"].GetArray().Size();
+    if(looping > 0){
+
+    
     for (int i = 0; i < looping; i++)
     {
         if (i == 0)
         {
-            cout << "*************************************************************************************************************************************************************************************" << endl;
+            cout << "*************************************************************************************************" << endl;
         }
         cout << "No# Of Ads : " << i + 1 << endl;
         UserAds.push_back(vector<string>());
@@ -1705,7 +1747,12 @@ void SellerDashboard::myAd()
             }
             cout << DisplayAd[j] << UserAds[i][j] << endl;
         }
-        cout << "*************************************************************************************************************************************************************************************" << endl;
+        cout << "*************************************************************************************************" << endl;
+    }
+    }
+    else{
+        cout<<"\n\n\n\n\n\n\n\n\n"<<setw(60);
+        cout<<"No Ads Available Now!"<<endl;
     }
 }
 void SellerDashboard::editAd()
@@ -1715,8 +1762,9 @@ void SellerDashboard::editAd()
     IStreamWrapper efs(ifs);
     Document d;
     d.ParseStream(efs);
-    myAd();
     int index = stoi(Personal[0][1]);
+    if(d.GetArray()[index].GetObject()["Account"].GetObject()["Ads"].GetArray().Size()>0){
+    myAd();
     int x;
     cout << endl
          << "Enter Ad Number Here To Edit : ";
@@ -1767,6 +1815,12 @@ void SellerDashboard::editAd()
         d.Accept(writes);
         cout << "Ad Has Been Edited!" << endl;
     }
+    }
+    else{
+        cout<<"\n\n\n\n\n\n\n\n\n"<<setw(60);
+        cout<<"No Ads Available Now!"<<endl;
+    }
+
 }
 void SellerDashboard::History()
 {
@@ -1780,11 +1834,10 @@ void SellerDashboard::History()
     cout << "Ad Title " << setw(30) << "Sell Date " << setw(31) << "Price " << endl;
     for (int i = 0; i < x; i++)
     {
-        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Adtitle"].GetString();
-        cout.width(30);
-        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Date"].GetString();
-        cout.width(30);
-        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Price"].GetInt() << endl;
+        int x = d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Adtitle"].GetStringLength();
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Adtitle"].GetString()<<setw(30-x+9);
+        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Date"].GetString()<<setw(30);
+        cout <<setw(30)<< d.GetArray()[id].GetObject()["Account"].GetObject()["History"].GetArray()[i].GetObject()["Price"].GetInt() << endl;
     }
     cout << endl;
     cout << "--> 1 For Generate Excel File!" << endl;
@@ -1919,6 +1972,7 @@ void BuyerDashboard::myCart()
     d.ParseStream(efs);
     mycart.clear();
     int cartSize = d.GetArray()[y].GetObject()["Account"].GetObject()["Cart"].GetArray().Size();
+    if(cartSize > 0){
     for (int i = 0; i < cartSize; i++)
     {
         const Value &Cart = d.GetArray()[y].GetObject()["Account"].GetObject()["Cart"].GetArray()[i].GetObject();
@@ -1930,20 +1984,31 @@ void BuyerDashboard::myCart()
         }
         mycart.push_back(cart);
     }
+     }
+     else{
+        //  cout<<"\n\n\n\n\n\n\n\n\n"<<setw(60);
+        // cout<<"Cart Is Empty Now!"<<endl;
+     }
     ifs.close();
+if(mycart.size() >0){
     for (int i = 0; i < mycart.size(); i++)
     {
         if (i == 0)
         {
-            cout << "*************************************************************************************************************************************************************************************" << endl;
+            cout << "*************************************************************************************************" << endl;
         }
         cout << "Cart No# " << i + 1 << endl;
         for (int j = 0; j < 11; j++)
         {
             cout << DisplayAd[j] << mycart[i][j] << endl;
         }
-        cout << "*************************************************************************************************************************************************************************************" << endl;
+        cout << "*************************************************************************************************" << endl;
     }
+}
+else{
+    cout<<"\n\n\n\n\n\n\n\n\n"<<setw(60);
+        cout<<"Cart Is Empty Now!"<<endl;
+}
 }
 void BuyerDashboard::delCart()
 {
@@ -2069,18 +2134,24 @@ void BuyerDashboard::myFavourite()
         }
         favourite.push_back(Fav);
     }
+    if(favourite.size()>0){
     for (int i = 0; i < favourite.size(); i++)
     {
         if (i == 0)
         {
-            cout << "*************************************************************************************************************************************************************************************" << endl;
+            cout << "*************************************************************************************************" << endl;
         }
         cout << "Item No# " << i + 1 << endl;
         for (int j = 0; j < 11; j++)
         {
             cout << DisplayAd[j] << favourite[i][j] << endl;
         }
-        cout << "*************************************************************************************************************************************************************************************" << endl;
+        cout << "*************************************************************************************************" << endl;
+    }        
+    }
+    else{
+        cout<<"\n\n\n\n\n\n\n\n\n"<<setw(60);
+        cout<<"No Ads Available Now!"<<endl;
     }
     ifs.close();
 }
@@ -2241,6 +2312,7 @@ void BuyerDashboard::checkOut()
     Writer<OStreamWrapper> writes(nfw);
     d.Accept(writes);
     isw.close();
+    cout<<"Product Succssfuly Purchased!"<<endl;
 }
 void BuyerDashboard::favouriteToCart()
 {
@@ -2297,9 +2369,10 @@ void BuyerDashboard::favouriteToCart()
 }
 void BuyerDashboard::AccountInformation()
 {
+    cout<<"\n\n\n\n\n\n\n\n\n"<<setw(56)<<"Account Information"<<endl<<endl;
     for (int i = 0; i < 6; i++)
     {
-        cout << AccountBuyer[i][0] << " " << AccountBuyer[i][1] << endl;
+        cout<<setw(41) << AccountBuyer[i][0] << " Is : \t" << AccountBuyer[i][1] << endl<<endl;
     }
 }
 void BuyerDashboard::Purchase(vector<string> &obj)
@@ -2334,9 +2407,9 @@ void ClearAd(int id, vector<vector<string> > &obj, vector<string> &ref)
     {
         Value ad(kObjectType);
         ad.AddMember("productId", StringRef(obj[k][0].c_str()), d.GetAllocator());
-        ad.AddMember("productDescription", StringRef(obj[k][1].c_str()), d.GetAllocator());
-        ad.AddMember("productCategory", StringRef(obj[k][2].c_str()), d.GetAllocator());
-        ad.AddMember("productTitle", StringRef(obj[k][3].c_str()), d.GetAllocator());
+        ad.AddMember("productDescription", StringRef(obj[k][2].c_str()), d.GetAllocator());
+        ad.AddMember("productCategory", StringRef(obj[k][3].c_str()), d.GetAllocator());
+        ad.AddMember("productTitle", StringRef(obj[k][1].c_str()), d.GetAllocator());
         ad.AddMember("adDate", StringRef(obj[k][4].c_str()), d.GetAllocator());
         ad.AddMember("adLocation", StringRef(obj[k][5].c_str()), d.GetAllocator());
         ad.AddMember("adAdress", StringRef(obj[k][6].c_str()), d.GetAllocator());
@@ -2372,20 +2445,25 @@ void BuyerDashboard::History()
     IStreamWrapper isw(ifs);
     Document d;
     d.ParseStream(isw);
+    system("clear");
     int x = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray().Size();
-    cout << "Ad Title " << setw(30) << "Category" << setw(30) << "Sell Date " << setw(31) << "Location " << setw(30) << "Name" << setw(30) << "Price" << endl;
+    cout << "Ad Title " << setw(20) << "Category" << setw(20) << "Sell Date " << setw(20) << "Name" << setw(20) << "Price" << endl;
     for (int i = 0; i < x; i++)
     {
+        int y = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Adtitle"].GetStringLength();
+        int z = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Category"].GetStringLength();
+        int w =d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Name"].GetStringLength();
+        int t = d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Price"].GetInt();
+        string temp = to_string(t);
+        t = temp.length();
         cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Adtitle"].GetString();
-        cout.width(30);
+        cout.width(21-y + z);
         cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Category"].GetString();
-        cout.width(30);
+        cout.width(20-z+8);
         cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Date"].GetString();
-        cout.width(30);
-        cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Location"].GetString();
-        cout.width(30);
+        cout.width(19-9+11);
         cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Name"].GetString();
-        cout.width(30);
+        cout.width(21 - w + t);
         cout << d.GetArray()[id].GetObject()["Account"].GetObject()["Purchase"].GetArray()[i].GetObject()["Price"].GetInt() << endl;
     }
     cout << endl;
@@ -2418,20 +2496,28 @@ Main:
     SellerDashboard Sellers;
     BuyerDashboard Buyer;
     system("clear");
-    cout << "Press 1 For Login " << endl;
-    cout << "Press 2 For SignUp " << endl;
+    cout<<"\n\n\n\n\n\n\n\n\n\n\n"<<setw(53);
+    cout<<"WELCOME USER"<<endl<<endl<<setw(53);
+    cout << "-> Press 1 For Login " << endl<<endl<<setw(54);
+    cout << "-> Press 2 For SignUp " << endl<<endl<<setw(48);
     int x;
-    cout << "Enter Here : ";
+    cout << "-> Enter Here : ";
     cin >> x;
     switch (x)
     {
     case 1:
         system("clear");
+        cout<<"\n\n\n\n\n\n\n\n\n\n\n"<<setw(44);
         cout << "Enter Your Email Here : ";
         cin >> email;
+        cout<<endl<<setw(44);
         cout << "Enter Your Password Here : ";
         cin >> pass;
         Log.Login(email, pass);
+        system("clear");
+        cout<<"\n\n\n\n\n\n\n\n\n\n\n"<<setw(44);
+        if(Log.GetAuth() == true){
+        system("clear");
         Obj.Information(Log.Index());
         type = Obj.AccountType();
         int swi;
@@ -2450,21 +2536,23 @@ Main:
             Sellers.Information(Log.Index());
         SellerMenu:
             system("clear");
-            cout << "-> 1 For Create New Ad!" << endl;
-            cout << "-> 2 For My Ads!" << endl;
-            cout << "-> 3 Edit Ad!" << endl;
-            cout << "-> 4 For Explorer Ads!" << endl;
-            cout << "-> 5 For Display Personal Information!" << endl;
-            cout << "-> 6 For Account Information!" << endl;
-            cout << "-> 7 For Sale's Record!" << endl;
-            cout << "-> 8 For Logout!" << endl;
-            cout << "Enter Here : ";
+            cout<<"\n\n\n\n\n\n\n\n"<<setw(58);
+            cout << "-> Press 1 For Create New Ad!" << endl<<endl<<setw(51);
+            cout << "-> Press 2 For My Ads!" << endl<<endl<<setw(48);
+            cout << "-> Press 3 Edit Ad!" << endl<<endl<<setw(57);
+            cout << "-> Press 4 For Explorer Ads!" << endl<<endl<<setw(73);
+            cout << "-> Press 5 For Display Personal Information!" << endl<<endl<<setw(64);
+            cout << "-> Press 6 For Account Information!" << endl<<endl<<setw(58);
+            cout << "-> Press 7 For Sale's Record!" << endl<<endl<<setw(51);
+            cout << "-> Press 8 For Logout!" << endl<<endl<<setw(45);
+            cout << "-> Enter Here : ";
             int seller;
             cin >> seller;
             switch (seller)
             {
             case 1:
                 system("clear");
+            cout<<"\n\n\n\n\n\n\n\n";
                 Sellers.createAd();
                 cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
                 int go;
@@ -2519,37 +2607,40 @@ Main:
                 system("clear");
                 Sellers.Listing();
                 cout << "--> 1 For By Category!" << endl;
-                    cout << "--> 2 For Seaching!" << endl;
-                    cout << "--> 3 For Price Range!" << endl;
+                cout << "--> 2 For Seaching!" << endl;
+                cout << "--> 3 For Price Range!" << endl;
+                cout << "--> 4 For Main Menu!"<<endl;
                     cout << "Enter Here : ";
                     int fil;
                     cin >> fil;
                     switch (fil)
                     {
                     case 1:
-                        Buyer.DisplayCategory();
+                        Sellers.DisplayCategory();
                         cout << "Enter Here : ";
                         int cat;
                         cin >> cat;
-                        Buyer.byCategory(Buyer.Category[cat - 1]);
-                        goto Cart;
+                        Sellers.byCategory(Sellers.Category[cat - 1]);
                         break;
                     case 2:
                         cout << "Enter Your Query Here : ";
-                        cin >> query;
-                        Buyer.Search(query);
-                        goto Cart;
+                        cin.ignore();
+                        getline(cin,query);
+                        Sellers.Search(query);
                         break;
                     case 3:
                         cout << "Enter Your Range Here : ";
                         int range;
                         cin >> range;
-                        Buyer.Price(range);
-                        goto Cart;
+                        Sellers.Price(range);
+                        break;
+                    case 4:
+                        goto SellerMenu;
+                        break;
                     default:
                         break;
                     }
-                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                    cout<<setw(70) << "Press 1 To Go Main Menu And 0 For Logout : " ;
                 cin >> go;
                 switch (go)
                 {
@@ -2566,7 +2657,7 @@ Main:
             case 5:
                 system("clear");
                 Sellers.PersonalInformation();
-                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                cout<<setw(70) << "Press 1 To Go Main Menu And 0 For Logout : " ;
                 cin >> go;
                 switch (go)
                 {
@@ -2583,7 +2674,7 @@ Main:
             case 6:
                 system("clear");
                 Sellers.AccountInformation();
-                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                cout <<setw(67)<< "Press 1 To Go Main Menu And 0 For Logout : ";
                 cin >> go;
                 switch (go)
                 {
@@ -2625,14 +2716,16 @@ Main:
             Buyer.Information(Log.Index());
         BuyerMenu:
             system("clear");
-            cout << "--> Press 1 For Explorer Ads!" << endl;
-            cout << "--> Press 2 For My Favourite!" << endl;
-            cout << "--> Press 3 For My Cart!" << endl;
-            cout << "--> Press 4 For Display Personal Information!" << endl;
-            cout << "--> Press 5 For Account Information!" << endl;
-            cout << "--> Press 6 For History!" << endl;
-            cout << "--> Press 7 For Logout!" << endl;
-            cout << "Enter Here : ";
+            cout<<"\n\n\n\n\n\n\n\n\n\n\n"<<setw(55);
+            cout<<"Buyer Dashboard"<<endl<<endl<<setw(55);
+            cout << "--> Press 1 For Explorer Ads!" << "\n\n"<<setw(55);
+            cout << "--> Press 2 For My Favourite!" <<  "\n\n"<<setw(50);
+            cout << "--> Press 3 For My Cart!" <<  "\n\n"<<setw(71);
+            cout << "--> Press 4 For Display Personal Information!" <<  "\n\n"<<setw(62);
+            cout << "--> Press 5 For Account Information!" <<  "\n\n"<<setw(50);
+            cout << "--> Press 6 For History!" <<  "\n\n"<<setw(49);
+            cout << "--> Press 7 For Logout!" <<  "\n\n"<<setw(43);
+            cout << "--> Enter Here : ";
             int buyer;
             cin >> buyer;
             switch (buyer)
@@ -2645,6 +2738,7 @@ Main:
                 cout << "--> Press 1 For Add To Cart!" << endl;
                 cout << "--> Press 2 For Add To Favourite!" << endl;
                 cout << "--> Press 3 For Apply Filters!" << endl;
+                cout << "--> Press 4 For GoTo Main Menu! "<<endl;
                 cout << "Enter Here : ";
                 cin >> ads;
                 switch (ads)
@@ -2687,6 +2781,10 @@ Main:
                     default:
                         break;
                     }
+                    break;
+                case 4:
+                    goto BuyerMenu;
+                    break;
                 default:
                     break;
                 }
@@ -2712,6 +2810,7 @@ Main:
                 cout << "--> Press 1 For Favourite Item To Cart!" << endl;
                 cout << "--> Press 2 For Delete Item From Favourite!" << endl;
                 cout << "--> Press 3 For Clear Favourite!" << endl;
+                cout << "--> Press 4 For Goto Main Menu!"<<endl;
                 cout << "Enter Here : ";
                 cin >> fav;
                 switch (fav)
@@ -2724,6 +2823,9 @@ Main:
                     break;
                 case 3:
                     Buyer.clearFavourite();
+                    break;
+                case 4:
+                    goto BuyerMenu;
                     break;
                 default:
                     break;
@@ -2749,6 +2851,7 @@ Main:
                 cout << "--> Press 1 For Delete Item From Cart!" << endl;
                 cout << "--> Press 2 For Clear Cart!" << endl;
                 cout << "--> Press 3 For CheckOut!" << endl;
+                cout << "--> Press 4 For Go To Main Menu!"<<endl;
                 cout << "Enter Here : ";
                 cin >> cart;
                 switch (cart)
@@ -2761,6 +2864,9 @@ Main:
                     break;
                 case 3:
                     Buyer.checkOut();
+                    break;
+                case 4:
+                    goto BuyerMenu;
                     break;
                 default:
                     break;
@@ -2782,7 +2888,7 @@ Main:
             case 4:
                 system("clear");
                 Buyer.PersonalInformation();
-                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                cout <<setw(68) <<"Press 1 To Go Main Menu And 0 For Logout : ";
                 cin >> go;
                 switch (go)
                 {
@@ -2799,7 +2905,7 @@ Main:
             case 5:
                 system("clear");
                 Buyer.AccountInformation();
-                cout << "Press 1 To Go Main Menu And 0 For Logout!" << endl;
+                cout <<setw(68) <<"Press 1 To Go Main Menu And 0 For Logout : ";
                 cin >> go;
                 switch (go)
                 {
@@ -2846,4 +2952,23 @@ Main:
     default:
         break;
     }
+    else{
+        int go;
+        cout<<"\n\n\n\n\n\n\n\n\n\n\n\n"<<setw(60);
+        cout<<"Invalid Credentials!"<<"\n\n"<<setw(65);
+        cout << "-> Press 1 To Try Again 0 For Exit!" << endl<<endl<<setw(55);
+        cout<<"Enter Here : ";
+                cin >> go;
+                switch (go)
+                {
+                case 0:
+                    break;
+                case 1:
+                    goto Main;
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
 }

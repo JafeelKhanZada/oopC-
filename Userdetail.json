@@ -1,5 +1,5 @@
 [{
-    "userId": "tDaArSkwR7DQ",
+    "userId": "E2qwg7e76klM",
     "Personal": {
         "fname": "Jafeel",
         "lname": "Waheed",
@@ -11,94 +11,179 @@
         "city": "Lahore",
         "state": "Punjab",
         "country": "Pakistan",
-        "joinDate": "07-22-2019"
+        "joinDate": "07-24-2019"
+    },
+    "Account": {
+        "type": "Seller",
+        "Ads": [],
+        "Subscription": "Free",
+        "History": [{
+            "Adtitle": "IPHONE XS MAX",
+            "Date": "07-24-2019",
+            "Price": 100000
+        }, {
+            "Adtitle": "Macbook Pro",
+            "Date": "07-24-2019",
+            "Price": 400
+        }, {
+            "Adtitle": "Hello ",
+            "Date": "07-24-2019",
+            "Price": 100
+        }, {
+            "Adtitle": "Hello",
+            "Date": "07-24-2019",
+            "Price": 100
+        }, {
+            "Adtitle": "Hp Omen",
+            "Date": "07-24-2019",
+            "Price": 6000
+        }, {
+            "Adtitle": "Iphone X",
+            "Date": "07-24-2019",
+            "Price": 2000
+        }],
+        "TotalAds": 10,
+        "AllowedAd": 9,
+        "ActiveAd": -1,
+        "SoldGood": 6,
+        "Revenue": 108600.0
+    }
+}, {
+    "userId": "US1ZiXwawXR1",
+    "Personal": {
+        "fname": "Shahroz",
+        "lname": "Noor",
+        "username": "shahroz",
+        "phoneNumber": "0318-9241743",
+        "gender": "Male",
+        "password": "123",
+        "email": "Shahroz@gmail.com",
+        "city": "Lahore",
+        "state": "Punjab",
+        "country": "Pakista",
+        "joinDate": "07-24-2019"
     },
     "Account": {
         "type": "Seller",
         "Ads": [{
-            "productId": "KJbJ1oYvOU",
-            "productDescription": "blackberry",
-            "productCategory": "Mobile",
-            "productTitle": "BlackBerry",
-            "adDate": "07-22-2019",
+            "productId": "y7BUmgdukf",
+            "productDescription": "Dell 7075 With 4GB GTX 1060TI",
+            "productCategory": "Computer",
+            "productTitle": "Dell 7075",
+            "adDate": "07-24-2019",
             "adLocation": "Lahore",
-            "adAdress": "Lahore Punjab,Pakistan",
-            "productPrice": 100,
+            "adAdress": "Lahore Punjab,Pakista",
+            "productPrice": 9000,
             "adFeature": false
         }],
-        "subscriptopn": "Free",
+        "Subscription": "Free",
         "History": [{
-            "Adtitle": "Iphone Xs Max ",
-            "Date": "07-22-2019",
-            "Price": 1000
-        }, {
-            "Adtitle": "Electronics",
-            "Date": "07-22-2019",
-            "Price": 20000
-        }, {
-            "Adtitle": "ajfdjnfa",
-            "Date": "07-22-2019",
-            "Price": 12345
-        }, {
             "Adtitle": "BlackBerry Q20",
-            "Date": "07-22-2019",
-            "Price": 2000
+            "Date": "07-24-2019",
+            "Price": 5000
         }],
         "TotalAds": 10,
         "AllowedAd": 10,
         "ActiveAd": 0,
-        "SoldGood": 4,
-        "Revenue": 35345.0
+        "SoldGood": 1,
+        "Revenue": 5000.0
     }
 }, {
-    "userId": "DNUGwZxpTfpe",
+    "userId": "xlEqJ8wgdnVG",
     "Personal": {
         "fname": "Memona",
         "lname": "Pervez",
-        "username": "Mona",
-        "phoneNumber": "0321-5729121",
-        "gender": "Female",
+        "username": "Memona",
+        "phoneNumber": "0382-3138473",
+        "gender": "Male",
         "password": "123",
         "email": "memona@gmail.com",
         "city": "Lahore",
-        "state": "Pakistan",
-        "country": "Punjab",
+        "state": "Punjab",
+        "country": "Pakistan",
         "joinDate": ""
     },
     "Account": {
         "type": "Buyer",
-        "Subscription": "Free",
-        "totalBid": 10,
+        "Subscription": "Standard",
+        "totalBid": 20,
         "Bidded": 0,
         "WonBids": 0,
         "LossBids": 0,
         "Cart": [],
         "Favourite": [],
         "Purchase": [{
-            "Adtitle": "Iphone Xs Max ",
+            "Adtitle": "IPHONE XS MAX",
             "Category": "Mobile",
-            "Date": "07-22-2019",
+            "Date": "07-24-2019",
             "Location": "Lahore",
-            "Price": 1000,
+            "Price": 100000,
             "Name": "Jafeel"
         }, {
-            "Adtitle": "Electronics",
-            "Category": "Laptop",
-            "Date": "07-22-2019",
+            "Adtitle": "Macbook Pro",
+            "Category": "Computer",
+            "Date": "07-24-2019",
             "Location": "Lahore",
-            "Price": 20000,
+            "Price": 400,
             "Name": "Jafeel"
         }, {
-            "Adtitle": "ajfdjnfa",
+            "Adtitle": "Hello ",
             "Category": "Mobile",
-            "Date": "07-22-2019",
+            "Date": "07-24-2019",
             "Location": "Lahore",
-            "Price": 12345,
+            "Price": 100,
+            "Name": "Jafeel"
+        }, {
+            "Adtitle": "Hello",
+            "Category": "Mobile",
+            "Date": "07-24-2019",
+            "Location": "Lahore",
+            "Price": 100,
             "Name": "Jafeel"
         }, {
             "Adtitle": "BlackBerry Q20",
             "Category": "Mobile",
-            "Date": "07-22-2019",
+            "Date": "07-24-2019",
+            "Location": "Lahore",
+            "Price": 5000,
+            "Name": "shahroz"
+        }, {
+            "Adtitle": "Hp Omen",
+            "Category": "Computer",
+            "Date": "07-24-2019",
+            "Location": "Lahore",
+            "Price": 6000,
+            "Name": "Jafeel"
+        }]
+    }
+}, {
+    "userId": "ZYUYN7TG7gMc",
+    "Personal": {
+        "fname": "Naveed",
+        "lname": "Warriach",
+        "username": "Neda",
+        "phoneNumber": "0356-3284371",
+        "gender": "Male",
+        "password": "12345",
+        "email": "naveed@gmail.com",
+        "city": "Mian Channu",
+        "state": "Punjab",
+        "country": "Pakistan",
+        "joinDate": "07-24-2019"
+    },
+    "Account": {
+        "type": "Buyer",
+        "Subscription": "VVIP",
+        "totalBid": 30,
+        "Bidded": 0,
+        "WonBids": 0,
+        "LossBids": 0,
+        "Cart": [],
+        "Favourite": [],
+        "Purchase": [{
+            "Adtitle": "Iphone X",
+            "Category": "Mobile",
+            "Date": "07-24-2019",
             "Location": "Lahore",
             "Price": 2000,
             "Name": "Jafeel"
